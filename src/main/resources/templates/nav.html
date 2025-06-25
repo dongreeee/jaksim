@@ -1,0 +1,27 @@
+
+
+    <div class="nav" th:fragment="navbar">
+        <ul class="menu">
+        </ul>
+        <ul class="etc">
+            <div class="nav_etc">
+                <div class="box" sec:authorize="isAuthenticated()">
+                    <div class="nav_tit login" onclick="/logout">
+                        <a href="/logout">LOGOUT</a>
+                    </div>
+                    <div class="nav_tit login" >
+                        <a href="/pwchk">Mypage</a>
+                    </div>
+
+                </div>
+
+                <!-- 로그인하지 않은 사용자일 경우 로그인 버튼 표시 -->
+                <div class="box" sec:authorize="isAnonymous()">
+                    <div class="nav_tit login" onclick="/login">
+                      <a href="/login">LOGIN</a>
+                    </div>
+                </div>
+            </div>
+        </ul>
+
+    </div>

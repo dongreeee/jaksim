@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>모바일 중심 웹</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div th:replace="~{nav.html::navbar}"></div>
+<div class="container">
+        <div class="sub_login">
+            <div class="tit">Login</div>
+            <div class="txt">로 그 인</div>
+            <div th:if="${param.error}">
+                <h4>아이디나 비번 틀림</h4>
+            </div>
+            <form class="login_form" action="/login" method="POST">
+                <div class="form_wrap">
+                    <div class="input_box">
+                        <div class="login_input">
+                            <input type="text" name="username" placeholder="아이디">
+                        </div>
+                        <div class="login_input">
+                            <input type="password" name="password" placeholder="비밀번호">
+                        </div>
+                    </div>
+                </div>
+                <div class="login_btns">
+                    <button type="submit" class="btn_login">LOGIN</button>
+                </div>
+                <div class="login_btns">
+                    <a class="btn-sign-in" href="/join">회원가입</a>
+                </div>
+                <div class="etc">
+                    <div class="find">
+                        <a class="find-id" href="/">아이디찾기</a>
+                        <a class="find-password" href="/">비밀번호 찾기</a>
+                    </div>
+                </div>
+<!--                <div class="sns_login">-->
+<!--                    <div class="sns_tit">SNS계정로그인</div>-->
+<!--                    <div class="sns_img">-->
+<!--                        <img class="sns_img" src="./images/kakao_logo.png" alt="kakao">-->
+<!--                    </div>-->
+<!--                </div>-->
+            </form>
+        </div>
+
+</div>
+</body>
+</html>

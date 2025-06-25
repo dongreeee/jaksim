@@ -1,0 +1,11 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 모바일 기본 뷰 설정 */
+body {
+  font-family: 'Helvetica', sans-serif;
+  color: #333;
+}

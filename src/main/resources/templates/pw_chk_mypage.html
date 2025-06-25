@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>모바일 중심 웹</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div th:replace="~{nav.html::navbar}"></div>
+<div class="container">
+    <div class="sub_login">
+        <div class="tit">MyPage</div>
+        <div class="txt">내 정 보</div>
+        <form class="login_form" action="/matchpw" method="POST">
+            <div class="form_wrap">
+                <div class="input_box">
+                    <div class="login_input">
+                        <input type="password" name="password" placeholder="비밀번호">
+                    </div>
+                </div>
+            </div>
+            <div class="login_btns">
+                <button type="submit" class="btn_login">정보 수정</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>
