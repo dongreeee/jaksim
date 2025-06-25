@@ -17,8 +17,7 @@
 
         #calendar {
           max-width: 900px;
-          margin: 40px auto;
-          height: 100vh;
+          margin-top: 20px;
         }
 
         /* 날짜 셀 테두리 제거 */
@@ -57,11 +56,44 @@
         .fc-scrollgrid-sync-inner{
         font-weight: 300;
         }
+        .fc .fc-toolbar-title{
+        font-weight: 200;
+    font-size: 20px;
+        }
+        .fc .fc-button-primary {
+    background-color: white;
+    border:none;
+    color: black;
+}
+
+        .fc .fc-button-primary:disabled {
+    background-color: white;
+    border:none;
+    color: black;
+}
+
+.fc .fc-button-primary:hover {
+   background-color: white;
+    border:none;
+    color: black;
+}
+
+        .fc-today-button{
+            border-color: black;
+        }
+
+        .fc-sticky{
+            font-size:9px;
+        }
+
+        .fc-h-event .fc-event-title {
+    display: block;
+}
     </style>
 </head>
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
-<div class="container" style="margin-top:30px; padding:20px;">
+<div class="container" style="padding:20px;">
 
     <div class="form-group">
         <div id='calendar-container'>
@@ -79,11 +111,13 @@
       var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
+        height:600,
         headerToolbar: {
           left: 'title',
-          center: '',
+          center: 'today',
           right: 'prev,next'
         },
+
         fixedWeekCount: true, // 항상 같은 주 수 유지
   dayMaxEventRows: true,
   views: {
@@ -102,8 +136,10 @@
 },
         events: [
           {
-            title: '예시 이벤트',
-            start: '2025-06-24'
+            title: '예시이벤트',
+            start: '2025-06-24',
+            end: '2025-06-26',
+            color: '#000000'
           }
         ]
       });
