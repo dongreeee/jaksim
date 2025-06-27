@@ -1,27 +1,50 @@
 
 
-    <div class="nav" th:fragment="navbar">
-        <ul class="menu">
-        </ul>
-        <ul class="etc">
-            <div class="nav_etc">
-                <div class="box" sec:authorize="isAuthenticated()">
-                    <div class="nav_tit login" onclick="/logout">
-                        <a href="/logout">LOGOUT</a>
-                    </div>
-                    <div class="nav_tit login" >
-                        <a href="/pwchk">Mypage</a>
-                    </div>
 
-                </div>
 
-                <!-- 로그인하지 않은 사용자일 경우 로그인 버튼 표시 -->
-                <div class="box" sec:authorize="isAnonymous()">
-                    <div class="nav_tit login" onclick="/login">
-                      <a href="/login">LOGIN</a>
-                    </div>
-                </div>
-            </div>
-        </ul>
+<!-- 상단바 -->
+<div class="nav" th:fragment="navbar">
+
+    <!-- 왼쪽 슬라이드 메뉴 -->
+    <div class="slide-menu" id="slideMenu">
+        <div class="slide-sub-menu">
+
+            <button class="close-btn" onclick="closeSlideMenu()">×</button>
+
+            <ul>
+                <li><a href="/menu1">메뉴 1</a></li>
+                <li><a href="/menu2">메뉴 2</a></li>
+                <li><a href="/menu3">메뉴 3</a></li>
+            </ul>
+        </div>
 
     </div>
+
+    <!-- 햄버거 아이콘 -->
+    <div class="hamburger" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <ul class="menu">
+        <!-- 필요 시 메뉴 항목 추가 -->
+    </ul>
+    <ul class="etc">
+        <div class="nav_etc">
+            <div class="box" sec:authorize="isAuthenticated()">
+                <div class="nav_tit login">
+                    <a href="/logout">LOGOUT</a>
+                </div>
+                <div class="nav_tit login">
+                    <a href="/pwchk">Mypage</a>
+                </div>
+            </div>
+            <div class="box" sec:authorize="isAnonymous()">
+                <div class="nav_tit login">
+                    <a href="/login">LOGIN</a>
+                </div>
+            </div>
+        </div>
+    </ul>
+</div>

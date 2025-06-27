@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
@@ -68,10 +69,15 @@ public class SecurityConfig {
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
-        http.authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/**").permitAll()
-//                아무나 접속 허용
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(
+                        "/common.js",
+                        "/styles.css",
+                        "/login"
+                ).permitAll()
+                .anyRequest().authenticated()
         );
+
 
         http.authenticationProvider(authenticationProvider());
 
@@ -84,6 +90,10 @@ public class SecurityConfig {
 
 //        로그아웃
         http.logout( logout -> logout.logoutUrl("/logout") );
+
+        http.exceptionHandling(exception -> exception
+                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+        );
 
         return http.build();
 

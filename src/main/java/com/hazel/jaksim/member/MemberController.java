@@ -101,10 +101,7 @@ public class MemberController {
         return "pw_chk_mypage.html";
     }
 
-    @GetMapping("/calendar")
-    public String calendar(){
-        return  "calendar.html";
-    }
+
 
     @PostMapping("/matchpw")
     public String matchpw(Authentication auth, String password){

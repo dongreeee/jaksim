@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -8,7 +8,8 @@
 
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css" />
+    <link href="/styles.css" rel="stylesheet"/>
+    <script src="/common.js"></script>
     <!-- FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
@@ -89,6 +90,10 @@
         .fc-h-event .fc-event-title {
     display: block;
 }
+
+        .fc-border{
+            color:none;
+        }
     </style>
 </head>
 <body>
@@ -103,6 +108,18 @@
 
 </div>
 
+<script th:inline="javascript">
+    let events = [
+        /*[# th:each="e : ${events}" ]*/
+        {
+            title: [[${e.title}]],
+            start: [[${e.sdate}]],
+            end: [[${e.edate}]],
+            color: [[${e.title_color}]]
+        }/*[(${eStat.last} ? '' : ',')]*/
+        /*[/]*/
+    ];
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -110,7 +127,7 @@
 
       var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
-        locale: 'ko',
+        locale: 'en',
         height:600,
         headerToolbar: {
           left: 'title',
@@ -131,17 +148,17 @@
       }
     }
   },
+     dateClick: function(info) {
+      // 날짜 정보 추출
+      var clickedDate = info.dateStr; // YYYY-MM-DD 형식
+
+      // 페이지 이동
+      window.location.href = '/calendaredit/'+clickedDate;
+    },
         dayCellContent: function (arg) {
     return { html: `<div class="day-number">${arg.date.getDate()}</div>` };
 },
-        events: [
-          {
-            title: '예시이벤트',
-            start: '2025-06-24',
-            end: '2025-06-26',
-            color: '#000000'
-          }
-        ]
+        events: events
       });
 
       calendar.render();
