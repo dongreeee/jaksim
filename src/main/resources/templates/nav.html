@@ -10,7 +10,9 @@
         <div class="slide-sub-menu">
 
             <button class="close-btn" onclick="closeSlideMenu()">×</button>
-
+            <div class="nav_tit login">
+                <a href="/pwchk">Mypage</a>
+            </div>
             <ul>
                 <li><a href="/menu1">메뉴 1</a></li>
                 <li><a href="/menu2">메뉴 2</a></li>
@@ -36,9 +38,7 @@
                 <div class="nav_tit login">
                     <a href="/logout">LOGOUT</a>
                 </div>
-                <div class="nav_tit login">
-                    <a href="/pwchk">Mypage</a>
-                </div>
+
             </div>
             <div class="box" sec:authorize="isAnonymous()">
                 <div class="nav_tit login">

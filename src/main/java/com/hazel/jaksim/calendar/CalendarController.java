@@ -2,15 +2,15 @@ package com.hazel.jaksim.calendar;
 
 import com.hazel.jaksim.member.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -27,10 +27,18 @@ public class CalendarController {
         return  "calendar.html";
     }
 
-    @GetMapping("/calendaredit/{date}")
-    public String calendaredit(@PathVariable String date, Model model ){
+    @GetMapping("/addCalendarView/{date}")
+    public String addCalendar(@PathVariable String date, Model model ){
         model.addAttribute("date",date);
         return "calendar_add.html";
+    }
+
+    @GetMapping("/editCalendarView/{id}")
+    public String editCalendar(@PathVariable Long id, Model model ){
+        Calendar calendar = new Calendar();
+        Optional<Calendar> result = calendarRepository.findById(id);
+        model.addAttribute("calendar",result.get());
+        return "calendar_edit.html";
     }
 
     @PostMapping("/addCalender")
@@ -57,6 +65,43 @@ public class CalendarController {
             return "calendar";
 
         }
+    }
+
+    @PostMapping("/editCalender")
+    public String editCalender(@RequestParam Map<String, Object> formData,
+                              Authentication auth){
+        System.out.println("id:"+Long.parseLong((String) formData.get("id")));
+        Optional<Calendar>optionalCal = calendarRepository.findById(Long.parseLong((String) formData.get("id")));
+        //String → Long 캐스팅 불가 → ClassCastException 자동 형변환 x
+
+        if(!optionalCal.isPresent()){
+            throw new IllegalArgumentException("id 조회 x");
+        }
+
+
+        try{
+            Calendar calendar = optionalCal.get();
+            calendar.setTitle((String) formData.get("title"));
+            calendar.setTitle_color((String) formData.get("title_color"));
+            calendar.setContent((String) formData.get("content"));
+            calendar.setSdate((String) formData.get("sdate"));
+            calendar.setEdate((String) formData.get("edate"));
+
+            calendarRepository.save(calendar);
+            return "redirect:/calendar";
+        }
+        catch (Exception e){
+
+            return "calendar";
+
+        }
+    }
+
+    @DeleteMapping("/deleteCalendar")
+    ResponseEntity<String> DeleteItem(@RequestBody Calendar body){
+        System.out.println(body.getId());
+        calendarRepository.deleteById(body.getId());
+        return ResponseEntity.status(200).body("삭제완료");
     }
 
 }

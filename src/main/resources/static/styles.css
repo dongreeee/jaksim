@@ -79,6 +79,7 @@ body {
       padding: 20px;
       background-color: white;
       height: 100%;
+      border-radius:15px;
     }
 
     /* 닫기 버튼 (오른쪽 상단 X) */
