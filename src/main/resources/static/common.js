@@ -33,3 +33,22 @@ document.addEventListener('DOMContentLoaded', function () {
      });
    }
  });
+
+
+
+
+// webSocket
+let stompClient = null; // ✅ 반드시 선언 필요
+
+function connectWebSocket(username) {
+  const socket = new SockJS('/ws-stomp');
+  stompClient = Stomp.over(socket);
+
+  stompClient.connect({}, function (frame) {
+    console.log('✅ WebSocket 연결됨:', frame);
+
+    stompClient.subscribe(`/topic/notify/useruser11`, function (message) {
+      alert('🔔 알림: ' + message.body);
+    });
+  });
+}

@@ -108,6 +108,18 @@
 
 </div>
 
+<!-- STOMP & SockJS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<!-- 공통 WebSocket 연결 스크립트 -->
+<script src="/js/common.js"></script>
+
+<script th:inline="javascript">
+    const username = 'useruser11';
+    connectWebSocket(username);
+</script>
+
 <script th:inline="javascript">
     let events = [
         /*[# th:each="e : ${events}" ]*/
@@ -150,12 +162,15 @@
     }
   },
      dateClick: function(info) {
-      // 날짜 정보 추출
-      var clickedDate = info.dateStr; // YYYY-MM-DD 형식
+    // 날짜 셀 클릭 시 (스케줄 없는 날짜 클릭 시)
+    window.location.href = '/addCalendarView/' + info.dateStr; // 신규 등록 페이지
+  },
 
-      // 페이지 이동
-      window.location.href = '/calendaredit/'+clickedDate;
-    },
+  eventClick: function(info) {
+    // 스케줄 클릭 시
+    var eventId = info.event.id; // 각 스케줄에 id가 있다고 가정
+    window.location.href = '/editCalendarView/' + eventId; // 해당 스케줄 편집 페이지
+  },
         dayCellContent: function (arg) {
     return { html: `<div class="day-number">${arg.date.getDate()}</div>` };
 },

@@ -1,8 +1,11 @@
 package com.hazel.jaksim.calendar;
 
 import com.hazel.jaksim.member.Member;
+import com.hazel.jaksim.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -18,6 +20,8 @@ import java.util.Optional;
 public class CalendarController {
 
     private final CalendarRepository calendarRepository;
+    private final MemberRepository memberRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/calendar")
     public String calendar(Model model, Authentication auth){
@@ -103,5 +107,22 @@ public class CalendarController {
         calendarRepository.deleteById(body.getId());
         return ResponseEntity.status(200).body("삭제완료");
     }
+
+    @PostMapping("/share")
+    public ResponseEntity<String> share(@RequestBody Map<String, String> payload) {
+        Optional<Member> member = memberRepository.findByUsername(payload.get("username"));
+        System.out.println(payload.get("username"));
+        if (member.isPresent()) {
+
+            messagingTemplate.convertAndSend("/topic/notify/" + payload.get("username"), "공유가 완료되었습니다!");
+
+            return ResponseEntity.ok("공유완료!");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("존재하지 않는 아이디입니다.");
+        }
+    }
+
 
 }

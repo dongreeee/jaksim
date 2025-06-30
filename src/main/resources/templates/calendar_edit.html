@@ -32,6 +32,7 @@
       padding: 0;
       background: none;
       cursor: pointer;
+      margin-top : 5px;
     }
 
         input[type="text"],
@@ -90,7 +91,10 @@
         <div class="label-row">
             <input type="hidden" name="id" th:value="${calendar.id}">
             <label for="title">제목</label>
-            <input type="color" name="title_color" id="color" th:value="${calendar.title_color}">
+            <div style="width:70%;">
+                <input type="color" name="title_color" id="color" th:value="${calendar.title_color}">
+            </div>
+                <img src="/images/share-icon.png" class="share-icon"  onclick="openModal()">
         </div>
         <input type="text" id="title" name="title" placeholder="제목을 입력하세요" th:value="${calendar.title}">
 
@@ -110,6 +114,16 @@
     <a class="delete-btn"  href="#" th:attr="data-id=${calendar.id}" onclick="deleteItem(event, this);">삭제하기</a>
 
 </div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <input type="text" name="share_id" id="share_id" placeholder="아이디를 입력하세요" />
+        <button onclick="share()">공유하기</button>
+    </div>
+</div>
+
+
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=	db0946b54e87a1652fbd99ff96a402de"></script>
 
 <script>
@@ -144,6 +158,43 @@ var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리
     });
 
 
+</script>
+
+<script>
+    function openModal() {
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('share_id').value = '';
+      document.getElementById('modalOverlay').style.display = 'none';
+
+    }
+
+    function share() {
+      const id = document.getElementById('share_id').value;
+      fetch('/share', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username : id })
+                })
+                .then(async res => {
+    const msg = await res.text();
+
+    if (!res.ok) {
+      // 4xx, 5xx 상태면 여기서 예외 처리
+      throw new Error(msg);
+    }
+
+    alert(msg);      // "공유완료!"
+    closeModal();
+  })
+  .catch(err => {
+    alert("공유 실패: " + err.message); // "존재하지 않는 아이디입니다." 등
+  });
+}
 </script>
 
 <script>
