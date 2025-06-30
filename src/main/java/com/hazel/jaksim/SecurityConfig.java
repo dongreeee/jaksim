@@ -73,7 +73,8 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/common.js",
                         "/styles.css",
-                        "/login"
+                        "/login",
+                        "/ws-stomp"
                 ).permitAll()
                 .anyRequest().authenticated()
         );
@@ -85,7 +86,7 @@ public class SecurityConfig {
 //        폼으로 로그인하기
         http.formLogin((formLogin)
                 -> formLogin.loginPage("/login")
-                .defaultSuccessUrl("/")
+                .defaultSuccessUrl("/calendar", true) // ← true 주의
         );
 
 //        로그아웃
