@@ -7,10 +7,80 @@
 
 /* 모바일 기본 뷰 설정 */
 body {
-  font-family: 'Helvetica', sans-serif;
+   font-family: sans-serif;
   color: #333;
 }
-/*상단바 style*/
+/*nav.html*/
+
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-container img {
+  width: 100%;
+  display: block;
+}
+
+  .image-container {
+      position: relative;
+      display: inline-block;
+      margin: 5px;
+  }
+
+  .image-container img {
+        width: 35px;
+        display: block;
+  }
+
+  .overlay-text {
+        position:absolute;
+        top: 40%;
+        left: 70%;
+        transform: translate(-50%, -50%);
+        color: white;
+        background-color: red;
+        width: 15px;
+        height: 15px;
+        font-size: 10px;
+        text-align: center;
+        border-radius: 10px;
+}
+
+.notification-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.bell-icon {
+  width: 30px;
+  cursor: pointer;
+}
+
+.notification-modal {
+  position: absolute;
+  top: 40px; /* 아이콘 바로 아래 */
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 10px;
+  width: 250px;
+  border-radius: 8px;
+
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.notification-modal.show {
+  max-height: 300px;
+  opacity: 1;
+  margin: 5px;
+}
+
  .nav {
         width: 100%;
         background-color: #333;
@@ -254,7 +324,6 @@ li{
  .nav > .menu > li > a{
     font-size: 15px;
     font-weight: 700;
-    font-family: Lato-Bold;
     line-height: 25px;
     color: #000;
  }
@@ -495,7 +564,6 @@ li{
 .sub_login .tit{
     font-size: 18px;
     letter-spacing: 14px;
-    font-family: Lato-Bold;
     color: #000;
     text-indent: 14px;
     margin: 0;
@@ -555,7 +623,7 @@ input{
     -webkit-appearance: none;
     appearance: none;
     font-weight: 300;
-    font-family: SpoqaHanSans;
+    font-family: sans-serif;
     color: #181818;
     background: transparent;
     border: 0;
@@ -626,7 +694,7 @@ input{
     margin-top: 20px;
     font-size: 16px;
     letter-spacing: 14px;
-    font-family: Lato-Bold;
+     font-family: sans-serif;
     color: #000;
     text-indent: 14px;
     margin: 0;
@@ -763,7 +831,7 @@ element.style {
     margin: 0 auto;
     display: block;
     text-align: center;
-    font-family: Abel,SpoqaHanSans;
+     font-family: sans-serif;
 }
 
 .login_btns {

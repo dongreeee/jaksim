@@ -3,7 +3,7 @@
 
 
 <!-- 상단바 -->
-<div class="nav" th:fragment="navbar">
+<div class="nav" th:fragment="navbar" sec:authorize="isAuthenticated()">
 
     <!-- 왼쪽 슬라이드 메뉴 -->
     <div class="slide-menu" id="slideMenu">
@@ -13,6 +13,19 @@
             <div class="nav_tit login">
                 <a href="/pwchk">Mypage</a>
             </div>
+
+            <div class="box" sec:authorize="isAuthenticated()">
+                <div class="nav_tit login">
+                    <a href="/logout">LOGOUT</a>
+                </div>
+
+            </div>
+            <div class="box" sec:authorize="isAnonymous()">
+                <div class="nav_tit login">
+                    <a href="/login">LOGIN</a>
+                </div>
+            </div>
+
             <ul>
                 <li><a href="/menu1">메뉴 1</a></li>
                 <li><a href="/menu2">메뉴 2</a></li>
@@ -29,22 +42,21 @@
         <div></div>
     </div>
 
-    <ul class="menu">
-        <!-- 필요 시 메뉴 항목 추가 -->
-    </ul>
-    <ul class="etc">
-        <div class="nav_etc">
-            <div class="box" sec:authorize="isAuthenticated()">
-                <div class="nav_tit login">
-                    <a href="/logout">LOGOUT</a>
-                </div>
-
-            </div>
-            <div class="box" sec:authorize="isAnonymous()">
-                <div class="nav_tit login">
-                    <a href="/login">LOGIN</a>
-                </div>
-            </div>
+    <div class="notification-wrapper">
+        <!-- 알림 아이콘 + 숫자 -->
+        <div class="image-container">
+            <img src="/images/alarm-icon.png" alt="알림" id="bellIcon" class="bell-icon">
+            <div class="overlay-text">1</div>
         </div>
-    </ul>
+
+        <!-- 알림 모달창 -->
+        <div class="notification-modal" id="notificationModal">
+            <p>📩 새로운 알림이 도착했습니다.</p>
+            <p>✅ 공유 요청이 승인되었습니다.</p>
+        </div>
+    </div>
+
+
 </div>
+
+
