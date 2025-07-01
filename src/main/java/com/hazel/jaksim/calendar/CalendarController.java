@@ -2,6 +2,8 @@ package com.hazel.jaksim.calendar;
 
 import com.hazel.jaksim.member.Member;
 import com.hazel.jaksim.member.MemberRepository;
+import com.hazel.jaksim.websoket.Message;
+import com.hazel.jaksim.websoket.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +24,7 @@ public class CalendarController {
 
     private final CalendarRepository calendarRepository;
     private final MemberRepository memberRepository;
+    private final MessageRepository messageRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/calendar")
@@ -109,18 +113,40 @@ public class CalendarController {
     }
 
     @PostMapping("/share")
-    public ResponseEntity<String> share(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<String> share(@RequestBody Map<String, String> payload, Authentication auth) {
         Optional<Member> member = memberRepository.findByUsername(payload.get("username"));
-        System.out.println(payload.get("username"));
-        if (member.isPresent()) {
+        Optional<Calendar> calendar = calendarRepository.findById(Long.valueOf(payload.get("calendar_id")));
 
-            messagingTemplate.convertAndSend("/topic/notify/" + payload.get("username"), "공유가 완료되었습니다!");
+        if (!member.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 아이디입니다.");
+        }
+
+        if (!calendar.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("캘린더 조회 실패");
+        }
+
+        String sendUser = auth.getName();
+        String recieveUser = payload.get("username");
+
+        if (sendUser.equals(recieveUser)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("자기 자신에게 공유할 수 없습니다.");
+        }
+
+
+        try {
+            Message message = new Message();
+            message.setSendUser(sendUser);
+            message.setRecieveUser(recieveUser);
+            message.setSendReg(LocalDateTime.now());
+            message.setCalendar(calendar.get());
+
+            messageRepository.save(message);
+
+            messagingTemplate.convertAndSend("/topic/notify/" + recieveUser, "공유가 완료되었습니다!");
 
             return ResponseEntity.ok("공유완료!");
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("존재하지 않는 아이디입니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("DB 저장 실패");
         }
     }
 

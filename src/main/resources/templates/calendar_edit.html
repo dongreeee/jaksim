@@ -89,7 +89,7 @@
 <div class="container" style="margin-top:30px; padding:20px;">
     <form id="calendarForm" action="/editCalender" method="post">
         <div class="label-row">
-            <input type="hidden" name="id" th:value="${calendar.id}">
+            <input type="hidden" name="id" id="calendar_id" th:value="${calendar.id}">
             <label for="title">제목</label>
             <div style="width:70%;">
                 <input type="color" name="title_color" id="color" th:value="${calendar.title_color}">
@@ -173,12 +173,13 @@ var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리
 
     function share() {
       const id = document.getElementById('share_id').value;
+      const calendar_id = document.getElementById('calendar_id').value;
       fetch('/share', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username : id })
+                body: JSON.stringify({ username : id, calendar_id: calendar_id})
                 })
                 .then(async res => {
     const msg = await res.text();

@@ -74,7 +74,9 @@ public class SecurityConfig {
                         "/common.js",
                         "/styles.css",
                         "/login",
-                        "/ws-stomp"
+                        "/ws-stomp",
+                        "/join",
+                        "/joinMember"
                 ).permitAll()
                 .anyRequest().authenticated()
         );
