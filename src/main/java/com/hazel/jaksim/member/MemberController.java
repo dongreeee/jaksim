@@ -55,9 +55,10 @@ public class MemberController {
                 throw new Exception("너무짧음");
             }
 
+            System.out.println("joinpw:"+password);
 
             var pw_encode = passwordEncoder.encode(password);
-
+            System.out.println("joinpw_encode:"+pw_encode);
 
             Member member = new Member();
             member.setUsername(username);
@@ -65,6 +66,7 @@ public class MemberController {
             member.setDisplayname(displayname);
 
             memberRepository.save(member);
+            System.out.println("joinpw_encode2:"+pw_encode);
             return "redirect:/login";
         }
         catch (Exception e){
