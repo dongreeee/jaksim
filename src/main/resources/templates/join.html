@@ -21,10 +21,26 @@
                             <div class="input_box">
                                 <div class="tit">이메일</div>
                                 <div class="input">
-                                    <input type="text" name="username" placeholder="soso@sosobooks.com">
+                                    <input type="text" name="username" id="username" placeholder="yourid@email.com">
+                                </div>
+                                <div style="display:flex; margin-top:10px;">
+                                    <div class="input" style="width:70%;">
+                                        <input type="text" name="authCode" id="authCode" placeholder="인증코드를 입력 해주세요.">
+
+                                    </div>
+                                    <button type="button" class="btn_bk btn_sm" onclick="requestAuthCode()" style="width: 30%; margin-left: 10px; background-color: white; color: black;">
+                                        요청
+                                    </button>
+                                </div>
+<!--                                인증번호 받기전 버튼 클릭 못하도록 비활성화 ??  인증 완료 되면 버튼 숨기고 인증 완료 텍스트 -->
+                                <div class="login_btns">
+                                    <button type="button" class="btn_bk btn_sm" onclick="verifyAuthCode()">
+                                        이메일 인증
+                                    </button>
                                 </div>
 <!--                                 이메일 인증 추가 : smtp-->
                             </div>
+
                             <div class="input_box">
                                 <div class="tit">이름</div>
                                 <div class="input">
@@ -56,11 +72,7 @@
                                     <div class="input">
                                         <input type="number" placeholder="휴대전화번호를 입력" value="">
                                     </div>
-                                    <div class="login_btns">
-                                        <button type="button" class="btn_bk btn_sm">
-                                            인증번호 발송
-                                        </button>
-                                    </div>
+
                                 </div>
                             </div>
                             <div class="login_btns"><button type="submit" class="btn_bk">회원가입</button></div>
@@ -71,5 +83,45 @@
 
 </div>
 </div>
+
+<script>
+    function requestAuthCode() {
+        const email = document.getElementById("username").value;
+
+        fetch("/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `email=${encodeURIComponent(email)}`
+        })
+        .then(res => res.text())
+        .then(msg => alert("인증번호 전송됨: " + msg))
+        .catch(err => alert("에러 발생: " + err));
+    }
+</script>
+
+<script>
+    function verifyAuthCode() {
+        const email = document.getElementById("username").value;
+        const code = document.getElementById("authCode").value;
+
+        fetch("/verify", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `email=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}`
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("인증 실패");
+            return res.text();
+        })
+        .then(msg => alert("인증 성공: " + msg))
+        .catch(err => alert("인증 실패: " + err.message));
+    }
+</script>
+
+
 </body>
 </html>
