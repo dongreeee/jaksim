@@ -19,16 +19,12 @@ public class Email {
 
     private String username;
 
-
-    private String email;
-
     @Column(name = "auth_code", nullable = false, length = 10)
     private String authCode;
 
     @Column(name = "expired_at", nullable = false)
     private LocalDateTime expiredAt;
 
-    @Column(nullable = false)
     private String verified;
 
     @Column(name = "created_at", nullable = false, updatable = false)

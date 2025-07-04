@@ -76,7 +76,9 @@ public class SecurityConfig {
                         "/login",
                         "/ws-stomp",
                         "/join",
-                        "/joinMember"
+                        "/joinMember",
+                        "/send",
+                        "/verify"
                 ).permitAll()
                 .anyRequest().authenticated()
         );
