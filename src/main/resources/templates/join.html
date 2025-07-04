@@ -23,7 +23,7 @@
                                 <div class="input">
                                     <input type="text" name="username" id="username" placeholder="yourid@email.com">
                                 </div>
-                                <div style="display:flex; margin-top:10px;">
+                                <div id="verifySection" style="display:flex; margin-top:10px;">
                                     <div class="input" style="width:70%;">
                                         <input type="text" name="authCode" id="authCode" placeholder="인증코드를 입력 해주세요.">
 
@@ -38,6 +38,8 @@
                                         이메일 인증
                                     </button>
                                 </div>
+
+                                <p id="verifiedMessage" style="display: none; color: green;">✅ 인증 완료!</p>
 <!--                                 이메일 인증 추가 : smtp-->
                             </div>
 
@@ -117,7 +119,18 @@
             if (!res.ok) throw new Error("인증 실패");
             return res.text();
         })
-        .then(msg => alert("인증 성공: " + msg))
+        .then(msg => {
+            alert("인증 성공: " + msg);
+
+            // ✅ 인증 영역 숨김
+            document.getElementById("verifySection").style.display = "none";
+
+            // ✅ 인증 완료 메시지 표시
+            document.getElementById("verifiedMessage").style.display = "block";
+
+            // ✅ 이메일 입력창 readonly 설정
+            document.getElementById("username").readOnly = true;
+        })
         .catch(err => alert("인증 실패: " + err.message));
     }
 </script>

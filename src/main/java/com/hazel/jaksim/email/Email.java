@@ -25,7 +25,7 @@ public class Email {
     @Column(name = "expired_at", nullable = false)
     private LocalDateTime expiredAt;
 
-    private String verified;
+    private String verified = "0";
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

@@ -1,5 +1,6 @@
 package com.hazel.jaksim.email;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -14,9 +15,14 @@ import java.util.Random;
 public class EmailService {
 
     @Autowired
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
 
-    private EmailRepository emailRepository;
+    private final EmailRepository emailRepository;
+//
+//    @PostConstruct
+//    public void checkRepo() {
+//        System.out.println("📌 EmailRepository 주입됨? " + (emailRepository != null));
+//    }
 
     public String sendEmail(String toEmail){
         String authCode = generateCode();
