@@ -17,11 +17,12 @@
                 </div>
                 <div class="login_wrap">
                     <div class="form_wrap">
-                        <form action="/joinMember" method="post">
+                        <form id="join-form" action="/joinMember" method="post">
                             <div class="input_box">
                                 <div class="tit">이메일</div>
                                 <div class="input">
                                     <input type="text" name="username" id="username" placeholder="yourid@email.com">
+                                    <input type="hidden" id="verify">
                                 </div>
                                 <div id="verifySection" style="display:flex; margin-top:10px;">
                                     <div class="input" style="width:70%;">
@@ -33,7 +34,7 @@
                                     </button>
                                 </div>
 <!--                                인증번호 받기전 버튼 클릭 못하도록 비활성화 ??  인증 완료 되면 버튼 숨기고 인증 완료 텍스트 -->
-                                <div class="login_btns">
+                                <div class="login_btns" id="loginbtn">
                                     <button type="button" class="btn_bk btn_sm" onclick="verifyAuthCode()">
                                         이메일 인증
                                     </button>
@@ -52,7 +53,7 @@
                             <div class="input_box">
                                 <div class="tit">비밀번호</div>
                                 <div class="input">
-                                    <input type="password" name="password" placeholder="비밀번호를 입력해 주세요.">
+                                    <input type="password" id="password" name="password" placeholder="비밀번호를 입력해 주세요.">
                                 </div>
                                 <ul class="checked">
                                     <li class="off" style="font-size: inherit;">영문</li>
@@ -62,7 +63,7 @@
                                 </ul>
 <!--                                비밀번호 재확인 -->
                                 <div class="input">
-                                    <input type="password" name="passwordchk" placeholder="비밀번호를 확인해 주세요.">
+                                    <input type="password" id="confirm-password" name="confirm-password" placeholder="비밀번호를 확인해 주세요.">
                                 </div>
                             </div>
                             <div class="input_box">
@@ -97,9 +98,15 @@
             },
             body: `username=${encodeURIComponent(email)}`
         })
-        .then(res => res.text())
-        .then(msg => alert("인증번호 전송됨: " + msg))
-        .catch(err => alert("에러 발생: " + err));
+         .then(res => {
+    if (!res.ok) {
+      // 에러일 경우에도 텍스트로 받아서 throw
+      return res.text().then(msg => { throw new Error(msg); });
+    }
+    return res.text();
+  })
+  .then(msg => alert("인증번호 전송됨: " + msg))
+  .catch(err => alert("에러 발생: " + err.message));  // 실제 에러 메시지 출력
     }
 </script>
 
@@ -124,6 +131,8 @@
 
             // ✅ 인증 영역 숨김
             document.getElementById("verifySection").style.display = "none";
+            document.getElementById("loginbtn").style.display = "none";
+            document.getElementById("verify").value = "1";
 
             // ✅ 인증 완료 메시지 표시
             document.getElementById("verifiedMessage").style.display = "block";
@@ -133,6 +142,28 @@
         })
         .catch(err => alert("인증 실패: " + err.message));
     }
+
+
+     // 폼 제출 시 이벤트 핸들링
+    document.getElementById('join-form').addEventListener('submit', function (e) {
+    const isVerified = document.getElementById('verify').value;
+     const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    if (isVerified !== '1') {
+      e.preventDefault(); // 제출 막기
+      alert('이메일 인증을 먼저 완료해주세요.');
+      return;
+    }
+
+     // 비밀번호 확인 검사
+    if (password !== confirmPassword) {
+      e.preventDefault();
+      alert('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+    // else: 인증되었으면 그냥 정상 제출됨
+  });
 </script>
 
 

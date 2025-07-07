@@ -1,7 +1,10 @@
 package com.hazel.jaksim.email;
 
 import com.hazel.jaksim.calendar.Calendar;
+import com.hazel.jaksim.member.Member;
+import com.hazel.jaksim.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +21,19 @@ public class EmailController {
 
     private final EmailRepository emailRepository;
 
+    private final MemberRepository memberRepository;
+
     @PostMapping("/send")
-    public ResponseEntity<String>sendCode(@RequestParam String username) {
+    public ResponseEntity<String>sendCode(@RequestParam String username) throws Exception {
+
+        Optional<Member> result = memberRepository.findByUsername(username);
+        if (result.isPresent()){
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)  // 409: 중복
+                    .body("이미 존재하는 아이디입니다.");
+        }
+
+
         String code = emailService.sendEmail(username);
 
         Email email = new Email();
