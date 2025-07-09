@@ -13,4 +13,10 @@ public class BasicController {
     String hello(){
         return "index.html";
     }
+
+    @GetMapping("/test")
+    String test()
+    {
+        return "test.html";
+    }
 }

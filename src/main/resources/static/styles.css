@@ -116,7 +116,7 @@ body {
         left: -600px;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: #ececec;
         padding: 20px;
         transition: left 0.3s ease;
         z-index: 1000;
@@ -150,8 +150,8 @@ body {
       position: relative;
       padding: 20px;
       background-color: white;
-      height: 100%;
       border-radius:15px;
+      margin-top : 20px;
     }
 
     /* 닫기 버튼 (오른쪽 상단 X) */
@@ -1000,3 +1000,165 @@ a {
     .close-btn:hover {
       color: #333;
     }
+
+    #nav_cal_table {
+      width: 100%;
+      table-layout: fixed;       /* 칸 너비 고정 */
+      border-collapse: collapse; /* 선 겹침 방지 */
+    }
+
+    #nav_cal_table th,
+    #nav_cal_table td {
+      width: 14.28%;             /* 100% ÷ 7일 */
+      text-align: center;
+      border: 1px solid transparent;  /* ✅ 테두리 투명 */
+      box-sizing: border-box;
+    }
+
+   .todo-list {
+             color: #888eff; /* 연보라 텍스트 */
+           }
+
+            .header {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             font-weight: bold;
+             font-size: 1.2em;
+           }
+
+           .header span {
+             font-weight: normal;
+             font-size: 0.8em;
+             color: #ccc;
+           }
+
+           .task-list {
+             margin-top: 20px;
+           }
+
+           .task {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 15px;
+           }
+
+           .task label {
+             display: flex;
+             align-items: center;
+             font-size: 0.9em;
+             cursor: pointer;
+           }
+
+           .task input[type="checkbox"] {
+             margin-right: 10px;
+             accent-color: #888eff;
+             appearance: auto;
+           }
+
+           .task-time {
+             font-size: 0.8em;
+             color: #ccc;
+           }
+
+           .footer {
+             display: flex;
+             justify-content: space-between;
+             font-size: 0.8em;
+             margin-top: 30px;
+             color: #888eff;
+           }
+
+           .footer a {
+             text-decoration: none;
+             color: #888eff;
+             font-weight: bold;
+           }
+
+          .calendar-widget {
+            font-family: sans-serif;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            padding: 20px;
+            color: #333;
+            box-sizing: border-box;
+          }
+
+                  .events {
+                    width: 50%;
+                    padding-right: 20px;
+                    box-sizing: border-box;
+                    overflow-wrap: break-word;
+                  }
+                   .events h2 {
+                     margin: 0;
+                     font-size: 1.1rem;
+                   }
+
+                   .events .no-event {
+                     color: #bbb;
+                     margin-top: 10px;
+                     font-size: 0.9rem;
+                   }
+
+                   .event-item {
+                     margin-top: 20px;
+                   }
+
+                   .event-item time {
+                     font-size: 0.9rem;
+                     color: #666;
+                     display: block;
+                   }
+
+                   .event-item .title {
+                     font-size: 1rem;
+                     margin-top: 4px;
+                   }
+
+                   .calendar-widget2 {
+                     width: 50%;
+                     text-align: center;
+                     box-sizing: border-box;
+                   }
+
+                   .calendar-widget2 h3 {
+                     margin: 0;
+                     font-size: 1.2rem;
+                   }
+
+                   .days {
+                     display: grid;
+                     grid-template-columns: repeat(7, 1fr);
+                     gap: 6px; /* 💡 칸 사이 여백 */
+                     margin-top: 10px;
+                   }
+
+                  .day {
+                    padding: 3px 0;
+                    border-radius: 8px;
+                    color: #333;
+                    word-break: keep-all;
+                    background-color: #f9f9f9;
+                     display: flex;
+                      justify-content: center;   /* 가로 중앙 */
+                      align-items: center;       /* 세로 중앙 */
+                  }
+
+                   .today {
+                     background-color: #333;
+                     color: white;
+                   }
+
+                   .emoji-day {
+                     font-size: 1.1rem;
+                   }
+
+                   .day-header {
+                     font-weight: bold;
+                     font-size: 0.9rem;
+                     color: #666;
+                   }

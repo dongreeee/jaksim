@@ -148,34 +148,103 @@ function onNotificationClick(messageId, calendarId) {
   });
 }
 
-  const nav_cal = document.getElementById("nav_cal");
 
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getMonth(); // 0~11
 
-  const firstDay = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
 
-  // ⭐️ 여기에 텍스트를 커스터마이징할 날짜와 텍스트를 정의해줘
-  const specialDates = {
-    10: "🎂",
-    15: "🎂",
-    21: "🎂"
-  };
+   const eventData = [
+        {
+          date: '2025-07-28',
+          time: '9:00',
+          title: '월세💸'
+        },
+        {
+          date: '2025-08-02',
+          time: '2:00',
+          title: '남해여행🌊',
+          period: '2025-08-02 14:00 ~ 2025-08-04'
+        }
+      ];
 
-  let html = `<h3>${year}년 ${month + 1}월</h3><table border="1" cellpadding="10"><tr>`;
-  const days = ["일", "월", "화", "수", "목", "금", "토"];
-  for (let day of days) html += `<th>${day}</th>`;
-  html += "</tr><tr>";
+      const emojiMap = {
+        '2025-07-28': '💸',
+        '2025-08-02': '🌊'
+      };
 
-  for (let i = 0; i < firstDay; i++) html += "<td></td>";
+      function renderCalendar() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const date = today.getDate();
 
-  for (let d = 1; d <= lastDate; d++) {
-    let content = specialDates[d] ? specialDates[d] : d;
-    html += `<td>${content}</td>`;
-    if ((d + firstDay) % 7 === 0) html += "</tr><tr>";
-  }
+        const calendar = document.getElementById('calendar2');
+        const monthName = `${month + 1}월`;
 
-  html += "</tr></table>";
-  nav_cal.innerHTML = html;
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+
+        calendar.innerHTML = `<h3>${monthName}</h3>`;
+
+        const days = document.createElement('div');
+        days.className = 'days';
+
+        const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
+        dayNames.forEach(name => {
+          const d = document.createElement('div');
+          d.className = 'day-header';
+          d.textContent = name;
+          days.appendChild(d);
+        });
+
+        const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+
+        // 빈칸
+        for (let i = 0; i < startDay; i++) {
+          const empty = document.createElement('div');
+          days.appendChild(empty);
+        }
+
+        for (let i = 1; i <= lastDay.getDate(); i++) {
+          const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+          const d = document.createElement('div');
+          d.className = 'day';
+
+          if (i === date) d.classList.add('today');
+          if (emojiMap[fullDate]) {
+            d.innerHTML = `<span class="emoji-day">${emojiMap[fullDate]}</span>`;
+          } else {
+            d.textContent = i;
+          }
+
+          days.appendChild(d);
+        }
+
+        calendar.appendChild(days);
+      }
+
+      function renderEvents() {
+        const eventList = document.getElementById('event-list');
+        const today = new Date();
+        const todayStr = today.toISOString().slice(0, 10);
+
+        let html = `<h2>${todayStr.replace(/-/g, '.')} (${['일','월','화','수','목','금','토'][today.getDay()]})</h2>`;
+        const todaysEvents = eventData.filter(e => e.date === todayStr);
+
+        if (todaysEvents.length === 0) {
+          html += `<div class="no-event">더 이상 이벤트 없음</div>`;
+        }
+
+        eventData.forEach(event => {
+          html += `
+            <div class="event-item">
+              <time>${event.time}</time>
+              <div class="title">| ${event.title}</div>
+              ${event.period ? `<div style="font-size: 0.8rem; color: #777">${event.period}</div>` : ''}
+            </div>
+          `;
+        });
+
+        eventList.innerHTML = html;
+      }
+
+      renderCalendar();
+      renderEvents();

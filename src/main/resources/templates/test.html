@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>위젯형 달력</title>
+    <style>
+        body {
+          font-family: sans-serif;
+          background-color: #ececec;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+        }
+
+        .calendar-widget {
+          background: white;
+          border-radius: 20px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          display: flex;
+          padding: 20px;
+          width: 600px;
+          color: #333;
+        }
+
+        .events {
+          flex: 1.2;
+          padding-right: 20px;
+        }
+
+        .events h2 {
+          margin: 0;
+          font-size: 1.1rem;
+        }
+
+        .events .no-event {
+          color: #bbb;
+          margin-top: 10px;
+          font-size: 0.9rem;
+        }
+
+        .event-item {
+          margin-top: 20px;
+        }
+
+        .event-item time {
+          font-size: 0.9rem;
+          color: #666;
+          display: block;
+        }
+
+        .event-item .title {
+          font-size: 1rem;
+          margin-top: 4px;
+        }
+
+        .calendar {
+          flex: 1;
+          text-align: center;
+        }
+
+        .calendar h3 {
+          margin: 0;
+          font-size: 1.2rem;
+        }
+
+        .days {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 10px;
+          margin-top: 10px;
+        }
+
+        .day {
+          padding: 8px;
+          border-radius: 8px;
+          color: #333;
+        }
+
+        .today {
+          background-color: #333;
+          color: white;
+        }
+
+        .emoji-day {
+          font-size: 1.1rem;
+        }
+
+        .day-header {
+          font-weight: bold;
+          font-size: 0.9rem;
+          color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calendar-widget">
+    <div class="events" id="event-list">
+        <!-- JavaScript로 채워짐 -->
+    </div>
+    <div class="calendar" id="calendar">
+        <!-- JavaScript로 채워짐 -->
+    </div>
+</div>
+
+<script>
+    const eventData = [
+      {
+        date: '2025-07-28',
+        time: '9:00',
+        title: '월세💸'
+      },
+      {
+        date: '2025-08-02',
+        time: '2:00',
+        title: '남해여행🌊',
+        period: '2025-08-02 14:00 ~ 2025-08-04'
+      }
+    ];
+
+    const emojiMap = {
+      '2025-07-28': '💸',
+      '2025-08-02': '🌊'
+    };
+
+    function renderCalendar() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const date = today.getDate();
+
+      const calendar = document.getElementById('calendar');
+      const monthName = `${month + 1}월`;
+
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+
+      calendar.innerHTML = `<h3>${monthName}</h3>`;
+
+      const days = document.createElement('div');
+      days.className = 'days';
+
+      const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
+      dayNames.forEach(name => {
+        const d = document.createElement('div');
+        d.className = 'day-header';
+        d.textContent = name;
+        days.appendChild(d);
+      });
+
+      const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+
+      // 빈칸
+      for (let i = 0; i < startDay; i++) {
+        const empty = document.createElement('div');
+        days.appendChild(empty);
+      }
+
+      for (let i = 1; i <= lastDay.getDate(); i++) {
+        const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const d = document.createElement('div');
+        d.className = 'day';
+
+        if (i === date) d.classList.add('today');
+        if (emojiMap[fullDate]) {
+          d.innerHTML = `<span class="emoji-day">${emojiMap[fullDate]}</span>`;
+        } else {
+          d.textContent = i;
+        }
+
+        days.appendChild(d);
+      }
+
+      calendar.appendChild(days);
+    }
+
+    function renderEvents() {
+      const eventList = document.getElementById('event-list');
+      const today = new Date();
+      const todayStr = today.toISOString().slice(0, 10);
+
+      let html = `<h2>${todayStr.replace(/-/g, '.')} (${['일','월','화','수','목','금','토'][today.getDay()]})</h2>`;
+      const todaysEvents = eventData.filter(e => e.date === todayStr);
+
+      if (todaysEvents.length === 0) {
+        html += `<div class="no-event">더 이상 이벤트 없음</div>`;
+      }
+
+      eventData.forEach(event => {
+        html += `
+          <div class="event-item">
+            <time>${event.time}</time>
+            <div class="title">| ${event.title}</div>
+            ${event.period ? `<div style="font-size: 0.8rem; color: #777">${event.period}</div>` : ''}
+          </div>
+        `;
+      });
+
+      eventList.innerHTML = html;
+    }
+
+    renderCalendar();
+    renderEvents();
+</script>
+
+</body>
+</html>

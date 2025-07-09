@@ -7,34 +7,75 @@
 
     <!-- 왼쪽 슬라이드 메뉴 -->
     <div class="slide-menu" id="slideMenu">
-        <div class="slide-sub-menu">
+
+        <div class="calendar-widget">
 
             <button class="close-btn" onclick="closeSlideMenu()">×</button>
-            <div class="nav_tit login">
-                <a href="/pwchk">Mypage</a>
+            <div class="events" id="event-list">
+                <!-- JavaScript로 채워짐 -->
             </div>
-
-            <div class="box" sec:authorize="isAuthenticated()">
-                <div class="nav_tit login">
-                    <a href="/logout">LOGOUT</a>
-                </div>
-
+            <div class="calendar-widget2" id="calendar2">
+                <!-- JavaScript로 채워짐 -->
             </div>
-            <div class="box" sec:authorize="isAnonymous()">
-                <div class="nav_tit login">
-                    <a href="/login">LOGIN</a>
-                </div>
-            </div>
-
-            <div id="nav_cal"></div>
-
-            <ul>
-                <li><a href="/menu1">메뉴 1</a></li>
-                <li><a href="/menu2">메뉴 2</a></li>
-                <li><a href="/menu3">메뉴 3</a></li>
-            </ul>
         </div>
 
+        <div class="slide-sub-menu">
+
+<!--            <div class="nav_tit login">-->
+<!--                <a href="/pwchk">Mypage</a>-->
+<!--            </div>-->
+
+<!--            <div class="box" sec:authorize="isAuthenticated()">-->
+<!--                <div class="nav_tit login">-->
+<!--                    <a href="/logout">LOGOUT</a>-->
+<!--                </div>-->
+
+<!--            </div>-->
+<!--            <div class="box" sec:authorize="isAnonymous()">-->
+<!--                <div class="nav_tit login">-->
+<!--                    <a href="/login">LOGIN</a>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <div class="todo-list">
+                <div class="header">
+                    <div>&larr; <strong style="color:#888eff">MONDAY</strong><span>, March 14th</span></div>
+                    <div>&rarr;</div>
+                </div>
+
+                <div class="task-list">
+                    <div class="task">
+                        <label><input type="checkbox">Morning run</label>
+                        <span class="task-time">7:30</span>
+                    </div>
+                    <div class="task">
+                        <label><input type="checkbox">Meeting</label>
+                        <span class="task-time">10:15</span>
+                    </div>
+                    <div class="task">
+                        <label><input type="checkbox">Lunch with Mike</label>
+                        <span class="task-time">13:00</span>
+                    </div>
+                    <div class="task">
+                        <label><input type="checkbox">Pay bills</label>
+                        <span class="task-time">ALL DAY</span>
+                    </div>
+                    <div class="task">
+                        <label><input type="checkbox">Renew gym membership</label>
+                        <span class="task-time">ALL DAY</span>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <div>5 TASKS</div>
+                    <a href="#">ADD NEW +</a>
+                </div>
+            </div>
+
+
+
+
+        </div>
     </div>
 
     <!-- 햄버거 아이콘 -->
