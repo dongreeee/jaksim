@@ -22,8 +22,8 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 //    repository.save()는 전체 엔티티 객체를 직접 조회 -> 수정 -> 저장할때 사용하는 방식
 //    단점 : 쿼리가 2번 실행 (조회 -> 업데이트) , 값 하나를 위해 전체 엔티티를 불러오는 건 비효율 적이다, 직접 조건의 어려움
 
-    @Query("SELECT new com.example.dto.MessageDto(m.id, u.displayName, m.recieveUser, m.sendReg, m.vc, m.calendar.id) " +
-            "FROM Message m JOIN m.sendUser u WHERE m.recieveUser = :recieveUser")
-    List<MessageDto> findMessageDtosByRecieveUser(@Param("recieveUser") String recieveUser);
+//    @Query("SELECT new com.example.dto.MessageDto(m.id, u.displayName, m.recieveUser, m.sendReg, m.vc, m.calendar.id) " +
+//            "FROM Message m JOIN m.sendUser u WHERE m.recieveUser = :recieveUser")
+//    List<MessageDto> findMessageDtosByRecieveUser(@Param("recieveUser") String recieveUser);
 
 }

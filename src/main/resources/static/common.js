@@ -147,3 +147,35 @@ function onNotificationClick(messageId, calendarId) {
     window.location.href = `/calendarView/${calendarId}`;
   });
 }
+
+  const nav_cal = document.getElementById("nav_cal");
+
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth(); // 0~11
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
+
+  // ⭐️ 여기에 텍스트를 커스터마이징할 날짜와 텍스트를 정의해줘
+  const specialDates = {
+    10: "🎂",
+    15: "🎂",
+    21: "🎂"
+  };
+
+  let html = `<h3>${year}년 ${month + 1}월</h3><table border="1" cellpadding="10"><tr>`;
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
+  for (let day of days) html += `<th>${day}</th>`;
+  html += "</tr><tr>";
+
+  for (let i = 0; i < firstDay; i++) html += "<td></td>";
+
+  for (let d = 1; d <= lastDate; d++) {
+    let content = specialDates[d] ? specialDates[d] : d;
+    html += `<td>${content}</td>`;
+    if ((d + firstDay) % 7 === 0) html += "</tr><tr>";
+  }
+
+  html += "</tr></table>";
+  nav_cal.innerHTML = html;
