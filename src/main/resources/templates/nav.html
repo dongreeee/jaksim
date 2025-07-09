@@ -43,16 +43,20 @@
     </div>
 
     <div class="notification-wrapper">
+
+        <input type="hidden" id="loginUsername" sec:authentication="principal.username">
+
         <!-- 알림 아이콘 + 숫자 -->
         <div class="image-container">
             <img src="/images/alarm-icon.png" alt="알림" id="bellIcon" class="bell-icon">
-            <div class="overlay-text">1</div>
+            <div id="msgCnt" class="overlay-text">0</div>
         </div>
 
         <!-- 알림 모달창 -->
         <div class="notification-modal" id="notificationModal">
-            <p>📩 새로운 알림이 도착했습니다.</p>
-            <p>✅ 공유 요청이 승인되었습니다.</p>
+            <ul id="notificationList">
+                <!-- 알림이 여기에 동적으로 들어감 -->
+            </ul>
         </div>
     </div>
 

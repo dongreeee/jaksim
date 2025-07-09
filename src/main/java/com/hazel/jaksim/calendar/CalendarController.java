@@ -135,7 +135,7 @@ public class CalendarController {
 
         try {
             Message message = new Message();
-            message.setSendUser(sendUser);
+            message.setSendUser(member.get());
             message.setRecieveUser(recieveUser);
             message.setSendReg(LocalDateTime.now());
             message.setCalendar(calendar.get());
@@ -150,5 +150,32 @@ public class CalendarController {
         }
     }
 
+
+    @GetMapping("/sharedCalendarView/{messageId}")
+    public String viewSharedCalendar(@PathVariable Long messageId,
+                                     Authentication auth,
+                                     Model model){
+
+        // 메세지 조회
+        Optional<Message> message = messageRepository.findById(messageId);
+
+        // 로그인 유저가 받은 사람인지 확인
+        if(!message.get().getRecieveUser().equals(auth.getName())){
+//            공유받을 사용자와 로그인한 사용자가 일치하지 않으면 ???
+            model.addAttribute("error", "false");
+            return "calendar";
+        }
+
+        // 공유받은 캘린더 조회
+        Calendar calendar = message.get().getCalendar();
+        if(calendar == null){
+            return  "calendar";
+        }
+
+        model.addAttribute("calendar", message.get().getCalendar());
+        model.addAttribute("shared", true);
+
+        return "calendar_edit.html";
+    }
 
 }

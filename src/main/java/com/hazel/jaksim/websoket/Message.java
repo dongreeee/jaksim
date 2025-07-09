@@ -1,6 +1,7 @@
 package com.hazel.jaksim.websoket;
 
 import com.hazel.jaksim.calendar.Calendar;
+import com.hazel.jaksim.member.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +18,9 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "send_user", nullable = false)
-    private String sendUser;
+    @ManyToOne
+    @JoinColumn(name = "send_user", referencedColumnName = "username")
+    private Member sendUser;
 
     @Column(name = "send_reg", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime sendReg;
