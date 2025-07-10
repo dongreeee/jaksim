@@ -184,7 +184,7 @@ function onNotificationClick(messageId, calendarId) {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
 
-        calendar.innerHTML = `<h3>${monthName}</h3>`;
+        calendar.innerHTML = `<div class='slide-bar-monthly'><h3>${monthName}</h3><span> 목표 지정하기 + </span></div>`;
 
         const days = document.createElement('div');
         days.className = 'days';
@@ -248,3 +248,78 @@ function onNotificationClick(messageId, calendarId) {
 
       renderCalendar();
       renderEvents();
+
+
+//      todo List
+  const todoData = {
+    '2025-07-09': [
+      { task: 'Morning run', time: '7:30' },
+      { task: 'Meeting', time: '10:15' },
+      { task: 'Lunch with Mike', time: '13:00' },
+      { task: 'Pay bills', time: 'ALL DAY' },
+      { task: 'Renew gym membership', time: 'ALL DAY' },
+    ],
+    '2025-07-10': [
+      { task: 'Workout with Jane', time: '6:00' },
+      { task: 'Team call', time: '11:00' },
+      { task: 'Read book', time: 'ALL DAY' }
+    ],
+    '2025-07-11': [
+      { task: 'Write report', time: '09:00' },
+      { task: 'Dinner with Mike', time: '18:00' },
+    ]
+  };
+
+  let currentDate = new Date('2025-07-09'); // 초기 날짜
+
+  const dayOfWeekText = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function updateTodoView() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const date = currentDate.getDate();
+    const weekday = currentDate.getDay();
+
+    // 상단 날짜 표시 갱신
+    document.getElementById('dayOfWeek').textContent = dayOfWeekText[weekday];
+    document.getElementById('dateText').textContent = `, ${monthNames[month]} ${date}`;
+
+    // 할 일 렌더링
+    const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+    const tasks = todoData[key] || [];
+
+    const taskList = document.querySelector('.task-list');
+    taskList.innerHTML = '';
+
+    if (tasks.length === 0) {
+      taskList.innerHTML = '<div class="task"><em>No tasks for today 🎉</em></div>';
+    } else {
+      tasks.forEach(t => {
+        const taskDiv = document.createElement('div');
+        taskDiv.className = 'task';
+        taskDiv.innerHTML = `
+          <label><input type="checkbox"> ${t.task}</label>
+          <a href="#">
+          <img src="/images/delete-icon.png" alt="알림" id="deleteIcon" style="width:15px;" />
+          </a>
+        `;
+        taskList.appendChild(taskDiv);
+      });
+    }
+
+    // 푸터에 task 수 표시
+    document.querySelector('.footer div').textContent = `${tasks.length} TASK${tasks.length !== 1 ? 'S' : ''}`;
+  }
+
+  document.getElementById('prevDayBtn').addEventListener('click', () => {
+    currentDate.setDate(currentDate.getDate() - 1);
+    updateTodoView();
+  });
+
+  document.getElementById('nextDayBtn').addEventListener('click', () => {
+    currentDate.setDate(currentDate.getDate() + 1);
+    updateTodoView();
+  });
+
+  updateTodoView(); // 초기 렌더링

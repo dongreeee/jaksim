@@ -5,11 +5,11 @@
 <!-- 상단바 -->
 <div class="nav" th:fragment="navbar" sec:authorize="isAuthenticated()">
 
-    <!-- 왼쪽 슬라이드 메뉴 -->
+    <!-- left-slide-bar start -->
     <div class="slide-menu" id="slideMenu">
 
+        <!-- 당일 스케줄 + 월 목표 캘린더 start -->
         <div class="calendar-widget">
-
             <button class="close-btn" onclick="closeSlideMenu()">×</button>
             <div class="events" id="event-list">
                 <!-- JavaScript로 채워짐 -->
@@ -18,47 +18,33 @@
                 <!-- JavaScript로 채워짐 -->
             </div>
         </div>
+        <!-- 당일 스케줄 + 월 목표 캘린더 end -->
 
+        <!-- 투두 리스트 start -->
         <div class="slide-sub-menu">
-
             <div class="todo-list">
                 <div class="header">
-                    <div>&larr; <strong style="color:#888eff">MONDAY</strong><span>, March 14th</span></div>
-                    <div>&rarr;</div>
+                    <div>
+                        <button class="day-btn" id="prevDayBtn">&larr;</button>
+                        <strong id="dayOfWeek" style="color:#888eff">MONDAY</strong>
+                        <span id="dateText">, March 14th</span>
+                    </div>
+                    <div><button class="day-btn" id="nextDayBtn">&rarr;</button></div>
                 </div>
 
-                <div class="task-list">
-                    <div class="task">
-                        <label><input type="checkbox">Morning run</label>
-                        <span class="task-time">7:30</span>
-                    </div>
-                    <div class="task">
-                        <label><input type="checkbox">Meeting</label>
-                        <span class="task-time">10:15</span>
-                    </div>
-                    <div class="task">
-                        <label><input type="checkbox">Lunch with Mike</label>
-                        <span class="task-time">13:00</span>
-                    </div>
-                    <div class="task">
-                        <label><input type="checkbox">Pay bills</label>
-                        <span class="task-time">ALL DAY</span>
-                    </div>
-                    <div class="task">
-                        <label><input type="checkbox">Renew gym membership</label>
-                        <span class="task-time">ALL DAY</span>
-                    </div>
-                </div>
+                <div class="task-list"></div>
 
                 <div class="footer">
-                    <div>5 TASKS</div>
-                    <a href="#">ADD NEW +</a>
+                    <div></div>
+                    <a href="#">
+                        <img src="/images/add-icon.png" alt="알림" id="addIcon" class="bell-icon" />
+                    </a>
                 </div>
             </div>
         </div>
-
-
+        <!-- 투두 리스트 end -->
     </div>
+    <!-- left-slide-bar end -->
 
     <!-- 햄버거 아이콘 -->
     <div class="hamburger" onclick="toggleMenu()">
@@ -67,6 +53,7 @@
         <div></div>
     </div>
 
+    <!-- 오른쪽 상단 바 start -->
     <div class="notification-wrapper">
 
         <input type="hidden" id="loginUsername" sec:authentication="principal.username">
@@ -83,14 +70,17 @@
                 <!-- 알림이 여기에 동적으로 들어감 -->
             </ul>
         </div>
+
+        <!-- 캘린더 -->
         <a class="image-container" href="/calendar">
             <img src="/images/calendar-icon.png" alt="알림" id="calendarIcon" class="bell-icon">
         </a>
-
+        <!-- 마이페이지 -->
         <a class="image-container" href="/pwchk">
             <img src="/images/mypage-icon.png" alt="알림" id="myPageIcon" class="bell-icon">
         </a>
     </div>
+    <!-- 오른쪽 상단 바 end -->
 
 
 </div>
