@@ -7,12 +7,6 @@
 
     <title>모바일 입력 폼</title>
     <style>
-        label {
-          display: block;
-          margin-top: 16px;
-          margin-bottom: 6px;
-          font-weight: bold;
-        }
 
          .label-row {
       display: flex;
@@ -50,7 +44,7 @@
           resize: vertical;
           min-height: 100px;
         }
-        button {
+        .save-btn {
           width: 100%;
           padding: 14px;
           font-size: 16px;
@@ -98,18 +92,27 @@
         </div>
         <input type="text" id="title" name="title" placeholder="제목을 입력하세요" th:value="${calendar.title}">
 
-        <label for="content">내용</label>
+        <div class="label-row">
+            <label for="content">내용</label>
+        </div>
+
         <textarea id="content" name="content" placeholder="내용을 입력하세요" th:text="${calendar.content}"></textarea>
 
         <div id="map" ></div>
 
-        <label for="sdate">시작 날짜</label>
+        <div class="label-row">
+            <label for="sdate">시작 날짜</label>
+        </div>
+
         <input type="date" id="sdate" name="sdate" th:value="${calendar.sdate}">
 
-        <label for="edate">종료 날짜</label>
+        <div class="label-row">
+            <label for="edate">종료 날짜</label>
+        </div>
+
         <input type="date" id="edate" name="edate"  th:value="${calendar.edate}">
 
-        <button type="submit" onclick="submitForm()">수정하기</button>
+        <button type="submit" class="save-btn" onclick="submitForm()">수정하기</button>
     </form>
     <a class="delete-btn"  href="#" th:attr="data-id=${calendar.id}" onclick="deleteItem(event, this);">삭제하기</a>
 
@@ -123,7 +126,13 @@
     </div>
 </div>
 
+<!-- STOMP & SockJS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<!-- 공통 WebSocket 연결 스크립트 -->
 <script src="/common.js"></script>
+
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=	db0946b54e87a1652fbd99ff96a402de"></script>
 
 <script>

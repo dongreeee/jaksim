@@ -1016,7 +1016,7 @@ a {
     }
 
    .todo-list {
-             color: #888eff; /* 연보라 텍스트 */
+             color: #000000;
            }
 
             .header {
@@ -1053,7 +1053,7 @@ a {
 
            .task input[type="checkbox"] {
              margin-right: 10px;
-             accent-color: #888eff;
+             accent-color: #000000;
              appearance: auto;
            }
 
@@ -1067,98 +1067,118 @@ a {
              justify-content: space-between;
              font-size: 0.8em;
              margin-top: 30px;
-             color: #888eff;
+             color: #000000;
            }
 
            .footer a {
              text-decoration: none;
-             color: #888eff;
+             color: #000000;
              font-weight: bold;
            }
 
           .calendar-widget {
-            font-family: sans-serif;
-            background-color: white;
+            max-width: 800px;
+            width: 100%;
+            padding: 16px;
             border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             display: flex;
-            padding: 20px;
-            color: #333;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            background: white;
+            box-sizing: border-box;
+            overflow: hidden;
+          }
+
+          .events {
+            width: 50%;
+            padding-right: 10px;
+            box-sizing: border-box;
+            overflow-wrap: break-word;
+          }
+
+          .events h2 {
+            margin: 0;
+            font-size: 0.95rem;
+          }
+
+          .events .no-event {
+            color: #bbb;
+            margin-top: 6px;
+            font-size: 0.8rem;
+          }
+
+          .event-item {
+            margin-top: 12px;
+          }
+
+          .event-item time {
+            font-size: 0.75rem;
+            color: #666;
+            display: block;
+          }
+
+          .event-item .title {
+            font-size: 0.9rem;
+            margin-top: 2px;
+          }
+
+          .calendar-widget2 {
+            width: 50%;
+            text-align: center;
             box-sizing: border-box;
           }
 
-                  .events {
-                    width: 50%;
-                    padding-right: 20px;
-                    box-sizing: border-box;
-                    overflow-wrap: break-word;
-                  }
-                   .events h2 {
-                     margin: 0;
-                     font-size: 1.1rem;
-                   }
+          .calendar-widget2 h3 {
+            margin: 0;
+            font-size: 1rem;
+            text-align: left;
+          }
 
-                   .events .no-event {
-                     color: #bbb;
-                     margin-top: 10px;
-                     font-size: 0.9rem;
-                   }
+          .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-top: 8px;
+          }
 
-                   .event-item {
-                     margin-top: 20px;
-                   }
+          .day {
+            height: 24px;
+            font-size: 0.75rem;
+            line-height: 24px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            color:black;
+          }
 
-                   .event-item time {
-                     font-size: 0.9rem;
-                     color: #666;
-                     display: block;
-                   }
+          .today {
+            background-color: #333;
+            color: white;
+          }
 
-                   .event-item .title {
-                     font-size: 1rem;
-                     margin-top: 4px;
-                   }
+          .emoji-day {
+            font-size: 1rem;
+          }
 
-                   .calendar-widget2 {
-                     width: 50%;
-                     text-align: center;
-                     box-sizing: border-box;
-                   }
+          .day-header {
+            font-weight: bold;
+            font-size: 0.75rem;
+            color: #666;
+          }
 
-                   .calendar-widget2 h3 {
-                     margin: 0;
-                     font-size: 1.2rem;
-                   }
+          .events h2, .calendar-widget2 h3 {
+            font-size: 0.9rem;
+            color: black;
+          }
 
-                   .days {
-                     display: grid;
-                     grid-template-columns: repeat(7, 1fr);
-                     gap: 6px; /* 💡 칸 사이 여백 */
-                     margin-top: 10px;
-                   }
+          .event-item time, .event-item .title {
+            font-size: 0.75rem;
+            color: black;
+          }
 
-                  .day {
-                    padding: 3px 0;
-                    border-radius: 8px;
-                    color: #333;
-                    word-break: keep-all;
-                    background-color: #f9f9f9;
-                     display: flex;
-                      justify-content: center;   /* 가로 중앙 */
-                      align-items: center;       /* 세로 중앙 */
-                  }
+          .days {
+            gap: 3px;
+            margin-top: 6px;
+          }
 
-                   .today {
-                     background-color: #333;
-                     color: white;
-                   }
-
-                   .emoji-day {
-                     font-size: 1.1rem;
-                   }
-
-                   .day-header {
-                     font-weight: bold;
-                     font-size: 0.9rem;
-                     color: #666;
-                   }

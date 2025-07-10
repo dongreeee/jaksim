@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
    const countEl = document.getElementById('msgCnt');
    const username = document.getElementById('loginUsername').value;
 
+   connectWebSocket(username);
+
    // 🔔 모달 열고 닫기
    if (bellIcon && modal) {
      bellIcon.addEventListener('click', (e) => {
@@ -177,7 +179,7 @@ function onNotificationClick(messageId, calendarId) {
         const date = today.getDate();
 
         const calendar = document.getElementById('calendar2');
-        const monthName = `${month + 1}월`;
+        const monthName = `${month + 1}`;
 
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
@@ -236,9 +238,7 @@ function onNotificationClick(messageId, calendarId) {
         eventData.forEach(event => {
           html += `
             <div class="event-item">
-              <time>${event.time}</time>
               <div class="title">| ${event.title}</div>
-              ${event.period ? `<div style="font-size: 0.8rem; color: #777">${event.period}</div>` : ''}
             </div>
           `;
         });

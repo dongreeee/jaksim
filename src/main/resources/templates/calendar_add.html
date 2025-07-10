@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/styles.css" rel="stylesheet"/>
-    <script src="/common.js"></script>
     <title>모바일 입력 폼</title>
     <style>
-        label {
-          display: block;
-          margin-top: 16px;
-          margin-bottom: 6px;
-          font-weight: bold;
-        }
+<!--        label {-->
+<!--          display: block;-->
+<!--          margin-top: 16px;-->
+<!--          margin-bottom: 6px;-->
+<!--          font-weight: bold;-->
+<!--        }-->
 
          .label-row {
       display: flex;
@@ -49,7 +48,7 @@
           resize: vertical;
           min-height: 100px;
         }
-        button {
+        .save-btn {
           width: 100%;
           padding: 14px;
           font-size: 16px;
@@ -58,9 +57,7 @@
           cursor: pointer;
           margin-top: 16px;
         }
-        button:hover {
-          background-color: #0056b3;
-        }
+
     </style>
 </head>
 <body>
@@ -72,20 +69,37 @@
             <input type="color" name="title_color" id="color" value="#3498db">
         </div>
         <input type="text" id="title" name="title" placeholder="제목을 입력하세요">
+        <div class="label-row">
+            <label for="content">내용</label>
+        </div>
 
-        <label for="content">내용</label>
         <textarea id="content" name="content" placeholder="내용을 입력하세요"></textarea>
 
-        <label for="sdate">시작 날짜</label>
+        <div class="label-row">
+            <label for="sdate">시작 날짜</label>
+        </div>
+
         <input type="date" id="sdate" name="sdate" th:value="${date}">
 
-        <label for="edate">종료 날짜</label>
+        <div class="label-row">
+            <label for="edate">종료 날짜</label>
+        </div>
+
         <input type="date" id="edate" name="edate" th:value="${date}">
 
-        <button type="submit" onclick="submitForm()">저장하기</button>
+        <button class="save-btn" type="submit" onclick="submitForm()">저장하기</button>
     </form>
 
 </div>
+
+
+
+<!-- STOMP & SockJS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<!-- 공통 WebSocket 연결 스크립트 -->
+<script src="/common.js"></script>
 
 <script>
     const startInput = document.getElementById('sdate');
