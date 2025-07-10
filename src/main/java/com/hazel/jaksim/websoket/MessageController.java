@@ -24,9 +24,8 @@ public class MessageController {
     @GetMapping("/notications/messages")
     public ResponseEntity<List<MessageDto>> getMessages(Authentication auth) {
         String username = auth.getName();  // 로그인한 유저 아이디
-       // List<MessageDto> messages = messageRepository.findMessageDtosByRecieveUser(username);
-//        return ResponseEntity.ok(messages);
-        return ResponseEntity.ok(null);
+        List<MessageDto> messages = messageRepository.findMessageDtosByRecieveUser(username);
+        return ResponseEntity.ok(messages);
     } // 꼭 리스트로!
 
 

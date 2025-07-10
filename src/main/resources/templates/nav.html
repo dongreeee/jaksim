@@ -21,22 +21,6 @@
 
         <div class="slide-sub-menu">
 
-<!--            <div class="nav_tit login">-->
-<!--                <a href="/pwchk">Mypage</a>-->
-<!--            </div>-->
-
-<!--            <div class="box" sec:authorize="isAuthenticated()">-->
-<!--                <div class="nav_tit login">-->
-<!--                    <a href="/logout">LOGOUT</a>-->
-<!--                </div>-->
-
-<!--            </div>-->
-<!--            <div class="box" sec:authorize="isAnonymous()">-->
-<!--                <div class="nav_tit login">-->
-<!--                    <a href="/login">LOGIN</a>-->
-<!--                </div>-->
-<!--            </div>-->
-
             <div class="todo-list">
                 <div class="header">
                     <div>&larr; <strong style="color:#888eff">MONDAY</strong><span>, March 14th</span></div>
@@ -71,11 +55,9 @@
                     <a href="#">ADD NEW +</a>
                 </div>
             </div>
-
-
-
-
         </div>
+
+
     </div>
 
     <!-- 햄버거 아이콘 -->
@@ -101,6 +83,13 @@
                 <!-- 알림이 여기에 동적으로 들어감 -->
             </ul>
         </div>
+        <a class="image-container" href="/calendar">
+            <img src="/images/calendar-icon.png" alt="알림" id="calendarIcon" class="bell-icon">
+        </a>
+
+        <a class="image-container" href="/pwchk">
+            <img src="/images/mypage-icon.png" alt="알림" id="myPageIcon" class="bell-icon">
+        </a>
     </div>
 
 

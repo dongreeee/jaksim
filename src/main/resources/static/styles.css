@@ -29,14 +29,14 @@ body {
   }
 
   .image-container img {
-        width: 35px;
+        width: 25px;
         display: block;
   }
 
   .overlay-text {
         position:absolute;
-        top: 40%;
-        left: 70%;
+        top: 20%;
+        left: 90%;
         transform: translate(-50%, -50%);
         color: white;
         background-color: red;
@@ -53,7 +53,7 @@ body {
 }
 
 .bell-icon {
-  width: 30px;
+  width: 25px;
   cursor: pointer;
 }
 
@@ -1077,6 +1077,7 @@ a {
            }
 
           .calendar-widget {
+            margin-top : 30px;
             max-width: 800px;
             width: 100%;
             padding: 16px;
@@ -1182,3 +1183,20 @@ a {
             margin-top: 6px;
           }
 
+          #notificationList li{
+            width : 100%;
+            padding-bottom : 5px;
+            border-bottom : dashed 1px #ECECEC;
+          }
+
+       .delete-btn {
+          display : block;
+          width: 100%;
+          padding: 14px;
+          font-size: 16px;
+          background-color: white;
+          color: red;
+          border: 1px solid red;
+          text-align : center;
+          margin : 15px 0;
+        }
