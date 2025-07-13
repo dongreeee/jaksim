@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+    const shouldActivateMenu = params.get('menu') === 'active';
     window.toggleMenu = function () {
         const menu = document.getElementById('slideMenu');
         console.log('slideMenu:', menu); // 🔍 확인용
@@ -8,6 +10,20 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('active toggled'); // 🔍 확인용
         }
     };
+
+      // 자동으로 메뉴 열기 (redirect로 왔을 때)
+        if (shouldActivateMenu) {
+            const menu = document.getElementById('slideMenu');
+            if (menu) {
+                menu.classList.remove('hidden');
+                menu.classList.add('active');
+            }
+
+            // 👇 URL에서 ?menu=active 제거 (선택적)
+            const url = new URL(window.location);
+            url.searchParams.delete('menu');
+            window.history.replaceState({}, '', url); // 주소 깔끔하게
+        }
 });
 
   function closeSlideMenu() {
@@ -251,75 +267,123 @@ function onNotificationClick(messageId, calendarId) {
 
 
 //      todo List
-  const todoData = {
-    '2025-07-09': [
-      { task: 'Morning run', time: '7:30' },
-      { task: 'Meeting', time: '10:15' },
-      { task: 'Lunch with Mike', time: '13:00' },
-      { task: 'Pay bills', time: 'ALL DAY' },
-      { task: 'Renew gym membership', time: 'ALL DAY' },
-    ],
-    '2025-07-10': [
-      { task: 'Workout with Jane', time: '6:00' },
-      { task: 'Team call', time: '11:00' },
-      { task: 'Read book', time: 'ALL DAY' }
-    ],
-    '2025-07-11': [
-      { task: 'Write report', time: '09:00' },
-      { task: 'Dinner with Mike', time: '18:00' },
-    ]
-  };
-
-  let currentDate = new Date('2025-07-09'); // 초기 날짜
-
   const dayOfWeekText = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
   const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  function updateTodoView() {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const date = currentDate.getDate();
-    const weekday = currentDate.getDay();
+  let currentDate = new Date();
 
-    // 상단 날짜 표시 갱신
-    document.getElementById('dayOfWeek').textContent = dayOfWeekText[weekday];
-    document.getElementById('dateText').textContent = `, ${monthNames[month]} ${date}`;
-
-    // 할 일 렌더링
-    const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-    const tasks = todoData[key] || [];
-
-    const taskList = document.querySelector('.task-list');
-    taskList.innerHTML = '';
-
-    if (tasks.length === 0) {
-      taskList.innerHTML = '<div class="task"><em>No tasks for today 🎉</em></div>';
-    } else {
-      tasks.forEach(t => {
-        const taskDiv = document.createElement('div');
-        taskDiv.className = 'task';
-        taskDiv.innerHTML = `
-          <label><input type="checkbox"> ${t.task}</label>
-          <a href="#">
-          <img src="/images/delete-icon.png" alt="알림" id="deleteIcon" style="width:15px;" />
-          </a>
-        `;
-        taskList.appendChild(taskDiv);
-      });
+    function getDateKey(dateObj) {
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
-    // 푸터에 task 수 표시
-    document.querySelector('.footer div').textContent = `${tasks.length} TASK${tasks.length !== 1 ? 'S' : ''}`;
-  }
+    function fetchTodos(dateKey) {
+      fetch(`/todo/info/${dateKey}`)
+        .then(res => res.json())
+        .then(data => renderTasks(data, dateKey));
+    }
 
-  document.getElementById('prevDayBtn').addEventListener('click', () => {
-    currentDate.setDate(currentDate.getDate() - 1);
-    updateTodoView();
-  });
+    function renderTasks(tasks, dateKey) {
+      // 날짜 텍스트
+      const weekday = currentDate.getDay();
+      document.getElementById('dayOfWeek').textContent = dayOfWeekText[weekday];
+      document.getElementById('dateText').textContent = `, ${monthNames[currentDate.getMonth()]} ${currentDate.getDate()}`;
 
-  document.getElementById('nextDayBtn').addEventListener('click', () => {
-    currentDate.setDate(currentDate.getDate() + 1);
-    updateTodoView();
-  });
+      // 목록 렌더링
+      const list = document.querySelector('.task-list');
+      list.innerHTML = '';
+      if (tasks.length === 0) {
+        list.innerHTML = '<div class="task"><em>No tasks for this day 🎉</em></div>';
+      } else {
+        tasks.forEach(todo => {
+          const div = document.createElement('div');
+          const isChecked = todo.isCompleted == '1' ? 'checked' : '';
+          div.className = 'task';
+          div.innerHTML = `
+            <label><input type="checkbox"  class="todo-check"  name="checkbox" data-id="${todo.id}" ${isChecked}> ${todo.content}</label>
+            <a href="#" data-id="${todo.id}" onclick="deleteTodo(event, this);"><img src="/images/delete-icon.png" alt="삭제" style="width:15px;" /></a>
+          `;
+          list.appendChild(div);
+        });
+      }
 
-  updateTodoView(); // 초기 렌더링
+      // 푸터
+      document.querySelector('.footer div').textContent = `${tasks.length} TASK${tasks.length !== 1 ? 'S' : ''}`;
+      document.getElementById('todo_add_btn').href = '/todo/addView/' + dateKey;
+    }
+
+    // 초기 로딩
+    fetchTodos(getDateKey(currentDate));
+
+    // 버튼 제어
+    document.getElementById('prevDayBtn').addEventListener('click', () => {
+      currentDate.setDate(currentDate.getDate() - 1);
+      fetchTodos(getDateKey(currentDate));
+    });
+    document.getElementById('nextDayBtn').addEventListener('click', () => {
+      currentDate.setDate(currentDate.getDate() + 1);
+      fetchTodos(getDateKey(currentDate));
+    });
+
+
+     function deleteTodo(e, button) {
+        e.preventDefault(); // a태그 기본 이동 방지
+        const id = button.getAttribute('data-id');
+          fetch('/todo/delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id })
+                    })
+                    .then(response => {
+                          if (response.ok) {
+                              const todoDiv = button.closest('.task'); // ← div.task 삭제
+                              const list = document.querySelector('.task-list');
+
+                              if (list.children.length === 0) {
+                                  list.innerHTML = '<div class="task"><em>No tasks for this day 🎉</em></div>';
+                              }
+                              if (todoDiv) {
+                                  todoDiv.remove();
+                              }
+                          } else {
+                              alert('삭제 실패');
+                          }
+                      })
+                      .catch(err => {
+                          console.error('삭제 중 오류:', err);
+                      });
+     }
+
+     const todoList = document.getElementById('taskList');
+
+    todoList.addEventListener('change', function(e) {
+        if (e.target.matches('.todo-check')) {
+            // 여기까지 오면 'todoList' 안의 체크박스만 처리됨
+            const checkbox = e.target;
+            const id = checkbox.getAttribute('data-id');
+            const checked = checkbox.checked;
+
+            fetch('/todo/check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: id,
+                    checked: checked
+                })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('서버 오류');
+                console.log('업데이트 성공');
+            })
+            .catch(err => {
+                console.error('업데이트 실패:', err);
+                checkbox.checked = !checked; // 원상복구
+            });
+        }
+    });
