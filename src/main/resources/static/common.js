@@ -188,7 +188,10 @@ function onNotificationClick(messageId, calendarId) {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
 
-        calendar.innerHTML = `<div class='slide-bar-monthly'><h3>${monthName}</h3><span> 목표 지정하기 + </span></div>`;
+        calendar.innerHTML = `<div class='slide-bar-monthly'><h3>${monthName}</h3>
+                              <span id='goal_nav1'> 목표 지정하기 + </span>
+                              <span id='goal_nav2' style="display:none;"></span>
+                              </div>`;
 
         const days = document.createElement('div');
         days.className = 'days';
@@ -237,6 +240,29 @@ function onNotificationClick(messageId, calendarId) {
             });
         }
 
+        function fetchMonthlyGoal() {
+            const ym = new Date().toISOString().slice(0, 7); // '2025-08'
+
+        fetch(`/monthlyGoal/info/${ym}`)
+          .then(res => {
+            if (!res.ok || res.status === 204) {
+              throw new Error("이번 달 목표 없음");
+            }
+            return res.json();
+          })
+          .then(data => {
+            const title = data.title;
+            document.getElementById('goal_nav2').textContent = `🌟${title}`;
+            document.getElementById('goal_nav2').style.display = 'inline';
+            document.getElementById('goal_nav1').style.display = 'none';
+          })
+          .catch(err => {
+            console.log(err.message);
+            document.getElementById('goal_nav1').style.display = 'inline';
+            document.getElementById('goal_nav2').style.display = 'none';
+          });
+          }
+
       function renderEvents(eventData) {
         const eventList = document.getElementById('event-list');
         const today = new Date();
@@ -261,6 +287,7 @@ function onNotificationClick(messageId, calendarId) {
       }
 
       renderCalendar();
+      fetchMonthlyGoal();
       fetchTodayEvents();
       renderEvents();
 
@@ -307,7 +334,6 @@ function onNotificationClick(messageId, calendarId) {
           list.appendChild(div);
         });
       }
-
       // 푸터
       document.querySelector('.footer div').textContent = `${tasks.length} TASK${tasks.length !== 1 ? 'S' : ''}`;
       document.getElementById('todo_add_btn').href = '/todo/addView/' + dateKey;
@@ -393,5 +419,5 @@ function onNotificationClick(messageId, calendarId) {
          const month = String(today.getMonth() + 1).padStart(2, '0');
          const yyyyMM = `${year}-${month}`;
 
-         window.location.href = `/monthlyGoal/addView/${yyyyMM}`;
+         window.location.href = `/monthlyGoal/addView`;
     }

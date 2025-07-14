@@ -34,7 +34,6 @@
     }
 
         input[type="text"],
-        input[type="date"],
         textarea {
           width: 100%;
           padding: 12px;
@@ -55,7 +54,6 @@
           background-color: black;
           color: white;
           cursor: pointer;
-          margin-top: 16px;
         }
 
     </style>
@@ -66,19 +64,17 @@
     <div class="calendar-widget2" id="calendar3" style="width:100%;" >
         <!-- JavaScript로 채워짐 -->
     </div>
-    <form id="todoForm" action="/todo/add" method="post">
-        <div class="label-row">
-            <label for="content">내용</label>
-        </div>
-        <input type="text" id="content" name="content" placeholder="내용을 입력하세요">
+    <form id="monthlyForm" action="/monthlyGoal/addContent" method="post">
 
-        <div class="label-row">
-            <label for="date">날짜</label>
-        </div>
 
-        <input type="date" id="date" th:value="${date}" disabled>
-<!--      disabled는 값을 전달하지 않음   -->
+        <input type="date" class="goal-date" name="date" id="date" th:value="${date}" disabled>
+        <!--      disabled는 값을 전달하지 않음   -->
         <input type="hidden" name="month" id="goal_month" th:value="${month}">
+        <input type="hidden" name="goal_id" id="goal_id" >
+
+        <input type="text" id="content" name="content" placeholder="오늘의 목표를 달성했나요? ">
+
+
 
         <button class="save-btn" type="submit" onclick="submitForm()">저장하기</button>
     </form>
@@ -87,7 +83,7 @@
         <div class="modal">
             <span class="close-btn" onclick="closeModal()">×</span>
             <input type="text" name="goal_title" id="goal_title" placeholder="목표를 입력하세요" />
-            <button class="modal-btn" onclick="goalMonthly()">저장하기</button>
+            <button class="modal-btn" onclick="goalMonthly()">달 성 완 료</button>
         </div>
     </div>
 
@@ -103,7 +99,7 @@
 <script src="/common.js"></script>
 
 <script>
-    document.getElementById('todoForm').addEventListener('submit', function (event) {
+    document.getElementById('monthlyForm').addEventListener('submit', function (event) {
       const content = document.getElementById('content').value.trim();
       const date = document.getElementById('date').value;
 
@@ -227,16 +223,21 @@ function changeMonth(offset) {
 
 fetch(`/monthlyGoal/info/${ym}`)
   .then(res => {
-    if (!res.ok || res.status === 204) {
+    if (res.status === 204) {
       throw new Error("이번 달 목표 없음");
+    }
+    if (!res.ok) {
+      throw new Error("서버 오류");
     }
     return res.json();
   })
   .then(data => {
     const title = data.title;
+    const goal_id = data.id;
     document.getElementById('goal_update').textContent = `🌟 이번달 목표: ${title}`;
     document.getElementById('goal_update').style.display = 'inline';
     document.getElementById('goal_add').style.display = 'none';
+    document.getElementById('goal_id').value = `${goal_id}`;
   })
   .catch(err => {
     console.log(err.message);

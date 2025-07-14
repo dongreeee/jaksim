@@ -1,5 +1,6 @@
 package com.hazel.jaksim.monthlygoal;
 
+import com.hazel.jaksim.calendar.Calendar;
 import com.hazel.jaksim.todo.Todo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,9 +21,13 @@ import java.util.Optional;
 public class MonthlyGoalController {
 
     private final MonthlyGoalRepository monthlyGoalRepository;
+    private final MonthlyGoalContentRepository monthlyGoalContentRepository;
 
     @GetMapping("/monthlyGoal/addView")
-    public String addView(Authentication auth){
+    public String addView(Authentication auth, Model model){
+        LocalDateTime now = LocalDateTime.now();
+        String formatted = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        model.addAttribute("date", formatted);
         return "monthlyGoal_add.html";
     }
 
@@ -52,5 +58,30 @@ public class MonthlyGoalController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/monthlyGoal/addContent")
+    public String addGoalContent(String date,
+                                 String content,
+                                 String goal_id,
+                                 Authentication auth){
+        try{
+            Optional<MonthlyGoal> monthlyGoalOptional = monthlyGoalRepository.findById(Long.valueOf(goal_id));
+
+            MonthlyGoalContent monthlyGoalContent = new MonthlyGoalContent();
+            monthlyGoalContent.setDateYmd(date);
+            monthlyGoalContent.setMonthlyGoal(monthlyGoalOptional.get());
+            monthlyGoalContent.setContent(content);
+            monthlyGoalContent.setUsername(auth.getName());
+
+            monthlyGoalContentRepository.save(monthlyGoalContent);
+            return "redirect:/monthlyGoal/addView";
+        }
+        catch (Exception e){
+
+            return "monthlyGoal/addView";
+
+        }
+    }
+
 
 }

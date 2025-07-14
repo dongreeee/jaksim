@@ -183,6 +183,7 @@ body {
 
      .slide-bar-monthly h3{
          width : 30%;
+         text-align : center;
      }
 
      .slide-bar-monthly span{
@@ -191,6 +192,11 @@ body {
         width: 70%;
         text-align: right;
       }
+
+       .slide-bar-monthly button{
+              background-color : transparent;
+              border : none;
+            }
 
     .box {
         margin-left: 20px;
@@ -1273,3 +1279,13 @@ a {
           text-align : center;
           margin : 15px 0;
         }
+
+            #calendar3 h3{
+                 width : 30%;
+                 text-align : center;
+             }
+
+    .goal-date{
+        border : none;
+        margin-top : 12px;
+    }
