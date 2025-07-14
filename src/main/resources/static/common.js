@@ -169,19 +169,7 @@ function onNotificationClick(messageId, calendarId) {
 
 
 
-   const eventData = [
-        {
-          date: '2025-07-28',
-          time: '9:00',
-          title: '월세💸'
-        },
-        {
-          date: '2025-08-02',
-          time: '2:00',
-          title: '남해여행🌊',
-          period: '2025-08-02 14:00 ~ 2025-08-04'
-        }
-      ];
+
 
       const emojiMap = {
         '2025-07-28': '💸',
@@ -239,30 +227,41 @@ function onNotificationClick(messageId, calendarId) {
         calendar.appendChild(days);
       }
 
-      function renderEvents() {
+//    calendar nav
+        function fetchTodayEvents() {
+          fetch('/calendar/navInfo')  // 파라미터 없이 호출
+            .then(res => res.json())
+            .then(data => renderEvents(data))
+            .catch(err => {
+              console.error('이벤트 불러오기 실패:', err);
+            });
+        }
+
+      function renderEvents(eventData) {
         const eventList = document.getElementById('event-list');
         const today = new Date();
         const todayStr = today.toISOString().slice(0, 10);
+        const dayOfWeek = ['일','월','화','수','목','금','토'][today.getDay()];
 
-        let html = `<h2>${todayStr.replace(/-/g, '.')} (${['일','월','화','수','목','금','토'][today.getDay()]})</h2>`;
-        const todaysEvents = eventData.filter(e => e.date === todayStr);
+        let html = `<h2>${todayStr.replace(/-/g, '.')} (${dayOfWeek})</h2>`;
 
-        if (todaysEvents.length === 0) {
+        if (!eventData || eventData.length === 0) {
           html += `<div class="no-event">더 이상 이벤트 없음</div>`;
+        } else {
+          eventData.forEach(event => {
+            html += `
+              <div class="event-item">
+                <div class="title">| ${event.title}</div>
+              </div>
+            `;
+          });
         }
-
-        eventData.forEach(event => {
-          html += `
-            <div class="event-item">
-              <div class="title">| ${event.title}</div>
-            </div>
-          `;
-        });
 
         eventList.innerHTML = html;
       }
 
       renderCalendar();
+      fetchTodayEvents();
       renderEvents();
 
 

@@ -2,206 +2,229 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>위젯형 달력</title>
+    <title>이달의 목표 달력</title>
     <style>
         body {
-          font-family: sans-serif;
-          background-color: #ececec;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-        }
-
-        .calendar-widget {
-          background: white;
-          border-radius: 20px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-          display: flex;
+          font-family: 'Arial', sans-serif;
+          background: #f0f0f5;
           padding: 20px;
-          width: 600px;
-          color: #333;
+          max-width: 480px;
+          margin: auto;
         }
 
-        .events {
-          flex: 1.2;
-          padding-right: 20px;
+        h2 {
+          margin-bottom: 0.5rem;
         }
 
-        .events h2 {
-          margin: 0;
-          font-size: 1.1rem;
+        .goal-container {
+          background: #fff;
+          padding: 1rem;
+          border-radius: 12px;
+          margin-bottom: 1rem;
+          box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
         }
 
-        .events .no-event {
-          color: #bbb;
-          margin-top: 10px;
-          font-size: 0.9rem;
-        }
-
-        .event-item {
-          margin-top: 20px;
-        }
-
-        .event-item time {
-          font-size: 0.9rem;
-          color: #666;
-          display: block;
-        }
-
-        .event-item .title {
+        .goal-container input {
+          width: 70%;
+          padding: 8px;
           font-size: 1rem;
-          margin-top: 4px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
         }
 
-        .calendar {
-          flex: 1;
+        .goal-container button {
+          padding: 8px 12px;
+          font-size: 1rem;
+          background-color: #888eff;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          margin-left: 8px;
+        }
+
+        #saved-goal {
+          margin-top: 0.5rem;
+          font-weight: bold;
+          color: #444;
+        }
+
+        .icon-picker {
+          background: #fff;
+          padding: 0.8rem;
+          border-radius: 12px;
+          margin-bottom: 1rem;
+          box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
           text-align: center;
         }
 
-        .calendar h3 {
-          margin: 0;
-          font-size: 1.2rem;
+        .icon-picker span {
+          font-size: 28px;
+          margin: 0 8px;
+          cursor: pointer;
+          transition: transform 0.2s;
         }
 
-        .days {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: 10px;
-          margin-top: 10px;
+        .icon-picker span.selected {
+          transform: scale(1.3);
+          border-bottom: 2px solid #888eff;
         }
 
-        .day {
-          padding: 8px;
-          border-radius: 8px;
-          color: #333;
+        .calendar {
+          background: #fff;
+          padding: 1rem;
+          border-radius: 12px;
+          box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
         }
 
-        .today {
-          background-color: #333;
-          color: white;
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: center;
         }
 
-        .emoji-day {
-          font-size: 1.1rem;
+        th {
+          color: #888eff;
+          padding: 8px 0;
         }
 
-        .day-header {
+        td {
+          width: 14.2%;
+          height: 50px;
+          cursor: default;
+          font-size: 20px;
+          user-select: none;
+        }
+
+        td.today {
+          color: #000;
           font-weight: bold;
-          font-size: 0.9rem;
-          color: #666;
+          background-color: #fffbe6;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+
+        td.checked {
+          background-color: #e6ffe6;
+          pointer-events: none;
+        }
+
+        td:hover.today:not(.checked) {
+          background-color: #f0f0ff;
         }
     </style>
 </head>
 <body>
 
-<div class="calendar-widget">
-    <div class="events" id="event-list">
-        <!-- JavaScript로 채워짐 -->
-    </div>
-    <div class="calendar" id="calendar">
-        <!-- JavaScript로 채워짐 -->
-    </div>
+<div class="goal-container">
+    <h2>🎯 이번 달의 목표</h2>
+    <input type="text" id="goal-input" placeholder="예: 매일 운동하기">
+    <button onclick="saveGoal()">저장</button>
+    <p id="saved-goal"></p>
+</div>
+
+<div class="icon-picker">
+    <span onclick="selectIcon(this, '❤️')">❤️</span>
+    <span onclick="selectIcon(this, '💪')">💪</span>
+    <span onclick="selectIcon(this, '🌟')">🌟</span>
+    <span onclick="selectIcon(this, '🔥')">🔥</span>
+    <span onclick="selectIcon(this, '🧠')">🧠</span>
+</div>
+
+<div class="calendar">
+    <h2 style="text-align: center;">📅 2025년 7월</h2>
+    <table id="calendar-table">
+        <thead>
+        <tr>
+            <th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th>
+        </tr>
+        </thead>
+        <tbody id="calendar-body">
+        <!-- JS로 자동 생성 -->
+        </tbody>
+    </table>
 </div>
 
 <script>
-    const eventData = [
-      {
-        date: '2025-07-28',
-        time: '9:00',
-        title: '월세💸'
-      },
-      {
-        date: '2025-08-02',
-        time: '2:00',
-        title: '남해여행🌊',
-        period: '2025-08-02 14:00 ~ 2025-08-04'
-      }
-    ];
+    let selectedIcon = '❤️';
+    const checkedDates = {}; // 오늘 인증한 날짜 저장
 
-    const emojiMap = {
-      '2025-07-28': '💸',
-      '2025-08-02': '🌊'
-    };
+    function saveGoal() {
+      const input = document.getElementById('goal-input');
+      const display = document.getElementById('saved-goal');
+      display.textContent = '🌟 목표: ' + input.value;
+      input.value = '';
+    }
 
-    function renderCalendar() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth();
-      const date = today.getDate();
-
-      const calendar = document.getElementById('calendar');
-      const monthName = `${month + 1}월`;
-
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-
-      calendar.innerHTML = `<h3>${monthName}</h3>`;
-
-      const days = document.createElement('div');
-      days.className = 'days';
-
-      const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
-      dayNames.forEach(name => {
-        const d = document.createElement('div');
-        d.className = 'day-header';
-        d.textContent = name;
-        days.appendChild(d);
+    function selectIcon(elem, icon) {
+      selectedIcon = icon;
+      document.querySelectorAll('.icon-picker span').forEach(span => {
+        span.classList.remove('selected');
       });
+      elem.classList.add('selected');
+    }
 
-      const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+    function generateCalendar(year, month) {
+      const tbody = document.getElementById('calendar-body');
+      tbody.innerHTML = '';
 
-      // 빈칸
+      const firstDay = new Date(year, month - 1, 1);
+      const lastDate = new Date(year, month, 0).getDate();
+      const startDay = firstDay.getDay();
+
+      const today = new Date();
+      const todayDate = today.getDate();
+      const isThisMonth = today.getFullYear() === year && (today.getMonth() + 1) === month;
+
+      let row = document.createElement('tr');
       for (let i = 0; i < startDay; i++) {
-        const empty = document.createElement('div');
-        days.appendChild(empty);
+        row.appendChild(document.createElement('td'));
       }
 
-      for (let i = 1; i <= lastDay.getDate(); i++) {
-        const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        const d = document.createElement('div');
-        d.className = 'day';
+      for (let date = 1; date <= lastDate; date++) {
+        const cell = document.createElement('td');
+        cell.textContent = date;
 
-        if (i === date) d.classList.add('today');
-        if (emojiMap[fullDate]) {
-          d.innerHTML = `<span class="emoji-day">${emojiMap[fullDate]}</span>`;
+        // 오늘 날짜만 체크 가능
+        if (isThisMonth && date === todayDate) {
+          cell.classList.add('today');
+
+          cell.addEventListener('click', function () {
+            // 이미 체크했는지 확인
+            if (checkedDates[date]) {
+              alert("오늘은 이미 체크했어요! 내일 또 도전해보세요 😄");
+              return;
+            }
+
+            const answer = prompt("오늘 어떤 노력을 했나요?");
+            if (answer && answer.trim() !== "") {
+              this.textContent = selectedIcon;
+              this.classList.add('checked');
+              checkedDates[date] = {
+                icon: selectedIcon,
+                memo: answer
+              };
+            } else {
+              alert("입력 내용을 작성해야 체크할 수 있어요!");
+            }
+          });
         } else {
-          d.textContent = i;
+          cell.style.color = "#aaa";
+          cell.style.cursor = "not-allowed";
         }
 
-        days.appendChild(d);
+        row.appendChild(cell);
+        if ((startDay + date) % 7 === 0) {
+          tbody.appendChild(row);
+          row = document.createElement('tr');
+        }
       }
-
-      calendar.appendChild(days);
+      tbody.appendChild(row);
     }
 
-    function renderEvents() {
-      const eventList = document.getElementById('event-list');
-      const today = new Date();
-      const todayStr = today.toISOString().slice(0, 10);
-
-      let html = `<h2>${todayStr.replace(/-/g, '.')} (${['일','월','화','수','목','금','토'][today.getDay()]})</h2>`;
-      const todaysEvents = eventData.filter(e => e.date === todayStr);
-
-      if (todaysEvents.length === 0) {
-        html += `<div class="no-event">더 이상 이벤트 없음</div>`;
-      }
-
-      eventData.forEach(event => {
-        html += `
-          <div class="event-item">
-            <time>${event.time}</time>
-            <div class="title">| ${event.title}</div>
-            ${event.period ? `<div style="font-size: 0.8rem; color: #777">${event.period}</div>` : ''}
-          </div>
-        `;
-      });
-
-      eventList.innerHTML = html;
-    }
-
-    renderCalendar();
-    renderEvents();
+    // 초기화
+    generateCalendar(2025, 7);
+    document.querySelectorAll('.icon-picker span')[0].classList.add('selected');
 </script>
 
 </body>

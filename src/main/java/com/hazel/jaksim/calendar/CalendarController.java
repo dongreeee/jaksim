@@ -13,7 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class CalendarController {
 
     private final CalendarRepository calendarRepository;
+    private final CalendarService calendarService;
     private final MemberRepository memberRepository;
     private final MessageRepository messageRepository;
     private final SimpMessagingTemplate messagingTemplate;
@@ -176,6 +179,15 @@ public class CalendarController {
         model.addAttribute("shared", true);
 
         return "calendar_edit.html";
+    }
+
+    @GetMapping("/calendar/navInfo")
+    @ResponseBody
+    public List<Calendar> getTodosByDate(Authentication auth) {
+        String username = auth.getName();
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        return calendarService.getTodosByDate(today , username);
     }
 
 }
