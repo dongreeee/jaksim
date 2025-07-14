@@ -64,7 +64,6 @@ body {
   background-color: white;
   border: 1px solid #ddd;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  padding: 10px;
   width: 200px;
   border-radius: 8px;
   text-align : center;
@@ -1000,6 +999,8 @@ a {
       border-radius: 8px;
       font-size: 16px;
       cursor: pointer;
+      width : 100%;
+      background-color: black;
     }
 
     .modal button:hover {

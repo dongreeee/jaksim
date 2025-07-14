@@ -386,3 +386,12 @@ function onNotificationClick(messageId, calendarId) {
             });
         }
     });
+
+    function goToMonthly(){
+         const today = new Date();
+         const year = today.getFullYear();
+         const month = String(today.getMonth() + 1).padStart(2, '0');
+         const yyyyMM = `${year}-${month}`;
+
+         window.location.href = `/monthlyGoal/addView/${yyyyMM}`;
+    }

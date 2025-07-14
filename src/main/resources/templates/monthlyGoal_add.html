@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/styles.css" rel="stylesheet"/>
+    <title>모바일 입력 폼</title>
+    <style>
+<!--        label {-->
+<!--          display: block;-->
+<!--          margin-top: 16px;-->
+<!--          margin-bottom: 6px;-->
+<!--          font-weight: bold;-->
+<!--        }-->
+
+         .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+    .label-row label {
+      font-weight: bold;
+    }
+
+     input[type="color"] {
+      width: 30px;
+      height: 30px;
+      border: none;
+      padding: 0;
+      background: none;
+      cursor: pointer;
+    }
+
+        input[type="text"],
+        input[type="date"],
+        textarea {
+          width: 100%;
+          padding: 12px;
+          font-size: 16px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          box-sizing: border-box;
+          margin-bottom: 12px;
+        }
+        textarea {
+          resize: vertical;
+          min-height: 100px;
+        }
+        .save-btn {
+          width: 100%;
+          padding: 14px;
+          font-size: 16px;
+          background-color: black;
+          color: white;
+          cursor: pointer;
+          margin-top: 16px;
+        }
+
+    </style>
+</head>
+<body>
+<div th:replace="~{nav.html::navbar}"></div>
+<div class="container" style="margin-top:30px; padding:20px;">
+    <div class="calendar-widget2" id="calendar3" style="width:100%;" >
+        <!-- JavaScript로 채워짐 -->
+    </div>
+    <form id="todoForm" action="/todo/add" method="post">
+        <div class="label-row">
+            <label for="content">내용</label>
+        </div>
+        <input type="text" id="content" name="content" placeholder="내용을 입력하세요">
+
+        <div class="label-row">
+            <label for="date">날짜</label>
+        </div>
+
+        <input type="date" id="date" th:value="${date}" disabled>
+<!--      disabled는 값을 전달하지 않음   -->
+        <input type="hidden" name="month" id="goal_month" th:value="${month}">
+
+        <button class="save-btn" type="submit" onclick="submitForm()">저장하기</button>
+    </form>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            <input type="text" name="goal_title" id="goal_title" placeholder="목표를 입력하세요" />
+            <button class="modal-btn" onclick="goalMonthly()">저장하기</button>
+        </div>
+    </div>
+
+</div>
+
+
+
+<!-- STOMP & SockJS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<!-- 공통 WebSocket 연결 스크립트 -->
+<script src="/common.js"></script>
+
+<script>
+    document.getElementById('todoForm').addEventListener('submit', function (event) {
+      const content = document.getElementById('content').value.trim();
+      const date = document.getElementById('date').value;
+
+      if (!content) {
+        alert("내용은 필수입니다.");
+        event.preventDefault();
+        return;
+      }
+
+    });
+
+</script>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+  renderCalendar();
+  fetchMonthlyGoal();
+    });
+
+let currentYear = new Date().getFullYear();
+let currentMonth = new Date().getMonth(); // 0 ~ 11
+
+   function renderCalendar() {
+  const today = new Date();
+  const calendar = document.getElementById('calendar3');
+
+  const year = currentYear;
+  const month = currentMonth;
+  const date = today.getDate();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const monthName = `${month + 1}`;
+
+  // 🔁 상단 바: 월 + ← → 버튼 추가
+  calendar.innerHTML = `
+    <div class='slide-bar-monthly'>
+      <button onclick="changeMonth(-1)">←</button>
+      <h3>${year}년 ${monthName}월</h3>
+      <button onclick="changeMonth(1)">→</button>
+      <span id="goal_add" onclick="openModal()"> 목표 지정하기 + </span>
+      <span id="goal_update" style="display:none;"></span>
+    </div>
+  `;
+
+
+
+  const days = document.createElement('div');
+  days.className = 'days';
+
+  const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
+  dayNames.forEach(name => {
+    const d = document.createElement('div');
+    d.className = 'day-header';
+    d.textContent = name;
+    days.appendChild(d);
+  });
+
+  const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+
+  for (let i = 0; i < startDay; i++) {
+    const empty = document.createElement('div');
+    days.appendChild(empty);
+  }
+
+  for (let i = 1; i <= lastDay.getDate(); i++) {
+    const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+    const d = document.createElement('div');
+    d.className = 'day';
+
+    if (i === date && month === today.getMonth() && year === today.getFullYear()) {
+      d.classList.add('today');
+    }
+
+    if (emojiMap[fullDate]) {
+      d.innerHTML = `<span class="emoji-day">${emojiMap[fullDate]}</span>`;
+    } else {
+      d.textContent = i;
+    }
+
+    days.appendChild(d);
+  }
+
+  calendar.appendChild(days);
+}
+
+// 🔁 월 변경 함수
+function changeMonth(offset) {
+  currentMonth += offset;
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear -= 1;
+  } else if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear += 1;
+  }
+  renderCalendar();
+}
+
+
+        function openModal() {
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('goal_title').value = '';
+      document.getElementById('modalOverlay').style.display = 'none';
+
+    }
+</script>
+
+
+<script>
+
+
+    const title = document.getElementById('goal_title').value;
+    const month = document.getElementById('goal_month').value;
+
+    function fetchMonthlyGoal() {
+    const ym = new Date().toISOString().slice(0, 7); // '2025-08'
+
+fetch(`/monthlyGoal/info/${ym}`)
+  .then(res => {
+    if (!res.ok || res.status === 204) {
+      throw new Error("이번 달 목표 없음");
+    }
+    return res.json();
+  })
+  .then(data => {
+    const title = data.title;
+    document.getElementById('goal_update').textContent = `🌟 이번달 목표: ${title}`;
+    document.getElementById('goal_update').style.display = 'inline';
+    document.getElementById('goal_add').style.display = 'none';
+  })
+  .catch(err => {
+    console.log(err.message);
+    document.getElementById('goal_add').style.display = 'inline';
+    document.getElementById('goal_update').style.display = 'none';
+  });
+  }
+
+  function goalMonthly() {
+    fetch('/monthlyGoal/add', {
+        method: 'POST',
+        headers: {
+              'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title : title, dateym: month})
+        })
+        .then(response => {
+         if (!response.ok) throw new Error('서버 오류');
+            console.log('업데이트 성공');
+            document.getElementById('goal_update').textContent = title;
+            document.getElementById('goal_add').style.display = 'none';
+            document.getElementById('goal_update').style.display = 'block';
+            closeModal();
+         })
+         .catch(err => {
+            console.error('업데이트 실패:', err);
+    });
+  }
+</script>
+
+
+</body>
+</html>
