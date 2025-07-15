@@ -21,6 +21,9 @@
 //headers: 요청 헤더 설정 (보통 JSON 전송 시 필수)
 //body: 전송할 실제 데이터 (문자열이어야 함 → JSON.stringify 필요)
 
+// 20250715
+// div 동적으로 생성 시 순서에 맞게 생성되고 있는가에대한 체크 항시 필요 !!!!!! 짱 중요함
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const params = new URLSearchParams(window.location.search);
@@ -202,6 +205,7 @@ function onNotificationClick(messageId, calendarId) {
          .then(res => res.json())
 //        날짜 배열을 받아서 각 날짜를 키로 하고 값은 항상 emoji인 객체(맵) 형태로 바꿔주는 것
          .then(dates => {
+         console.log('goalcount옴');
            // 모든 날짜에 동일 이모지 할당
 //           dates : ["2025-07-28", "2025-08-02"] 같은 배열
 //           acc : 객체를 누적할 객체 (초기값 : {})
@@ -230,7 +234,7 @@ function onNotificationClick(messageId, calendarId) {
 
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
-
+        console.log("옴??");
         calendar.innerHTML = `<div class='slide-bar-monthly'><h3>${monthName}</h3>
                               <span id='goal_nav1'> 목표 지정하기 + </span>
                               <span id='goal_nav2' style="display:none;"></span>
@@ -271,6 +275,8 @@ function onNotificationClick(messageId, calendarId) {
         }
 
         calendar.appendChild(days);
+
+        fetchMonthlyGoal();
       }
 
 //    calendar nav
@@ -288,21 +294,35 @@ function onNotificationClick(messageId, calendarId) {
 
         fetch(`/monthlyGoal/info/${ym}`)
           .then(res => {
-            if (!res.ok || res.status === 204) {
+            if (res.status === 204) {
+            console.log('1');
               throw new Error("이번 달 목표 없음");
             }
-            return res.text();
+            if (!res.ok) {
+           console.log('2');
+              throw new Error("서버 오류");
+            }
+            return res.json();
           })
           .then(data => {
-            const title = data;
-            document.getElementById('goal_nav2').textContent = `🌟${title}`;
-            document.getElementById('goal_nav2').style.display = 'inline';
-            document.getElementById('goal_nav1').style.display = 'none';
+          console.log('3');
+                  const title = data.title;
+                  const goalNav1 = document.getElementById('goal_nav1');
+                  const goalNav2 = document.getElementById('goal_nav2');
+                  if (goalNav1 && goalNav2) {
+                    goalNav2.textContent = `🌟${title}`;
+                    goalNav2.style.display = 'inline';
+                    goalNav1.style.display = 'none';
+                  }
           })
           .catch(err => {
-            console.log(err.message);
-            document.getElementById('goal_nav1').style.display = 'inline';
-            document.getElementById('goal_nav2').style.display = 'none';
+              console.log(err.message);
+                  const goalNav1 = document.getElementById('goal_nav1');
+                  const goalNav2 = document.getElementById('goal_nav2');
+                  if (goalNav1 && goalNav2) {
+                    goalNav1.style.display = 'inline';
+                    goalNav2.style.display = 'none';
+                  }
           });
           }
 
@@ -331,8 +351,6 @@ function onNotificationClick(messageId, calendarId) {
 
       fetchGoalDatesAndRender();
 
-      //renderCalendar();  // 렌더링 실행
-      fetchMonthlyGoal();
       fetchTodayEvents();
       renderEvents();
 
