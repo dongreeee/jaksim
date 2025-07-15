@@ -24,6 +24,6 @@ public class MonthlyGoal {
     private String dateYm;
 
     @Column(name = "regdate", insertable = false, updatable = false)
-    private LocalDateTime regdate;
+    private LocalDateTime regdate = LocalDateTime.now();
 
 }

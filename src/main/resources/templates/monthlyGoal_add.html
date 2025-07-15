@@ -41,7 +41,7 @@
           border: 1px solid #ccc;
           border-radius: 8px;
           box-sizing: border-box;
-          margin-bottom: 12px;
+          margin: 12px 0;
         }
         textarea {
           resize: vertical;
@@ -67,7 +67,7 @@
     <form id="monthlyForm" action="/monthlyGoal/addContent" method="post">
 
 
-        <input type="date" class="goal-date" name="date" id="date" th:value="${date}" disabled>
+        <input type="hidden" class="goal-date" name="date" id="date" th:value="${date}">
         <!--      disabled는 값을 전달하지 않음   -->
         <input type="hidden" name="month" id="goal_month" th:value="${month}">
         <input type="hidden" name="goal_id" id="goal_id" >
@@ -76,14 +76,14 @@
 
 
 
-        <button class="save-btn" type="submit" onclick="submitForm()">저장하기</button>
+        <button class="save-btn" type="submit" onclick="submitForm()">달 성 완 료</button>
     </form>
 
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal()">×</span>
             <input type="text" name="goal_title" id="goal_title" placeholder="목표를 입력하세요" />
-            <button class="modal-btn" onclick="goalMonthly()">달 성 완 료</button>
+            <button class="modal-btn" onclick="goalMonthly()">저장하기</button>
         </div>
     </div>
 
@@ -215,9 +215,6 @@ function changeMonth(offset) {
 <script>
 
 
-    const title = document.getElementById('goal_title').value;
-    const month = document.getElementById('goal_month').value;
-
     function fetchMonthlyGoal() {
     const ym = new Date().toISOString().slice(0, 7); // '2025-08'
 
@@ -247,6 +244,10 @@ fetch(`/monthlyGoal/info/${ym}`)
   }
 
   function goalMonthly() {
+
+    const title = document.getElementById('goal_title').value;
+    const month = document.getElementById('goal_month').value;
+
     fetch('/monthlyGoal/add', {
         method: 'POST',
         headers: {

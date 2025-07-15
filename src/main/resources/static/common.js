@@ -1,3 +1,27 @@
+// ajax vs fetch() 차이
+// 둘 다 비동기로 서버에 요청 , rest api요청에 적합
+
+// fetch() - 표준 JS
+// async/await 사용 가능
+// 기본적으로는 GET요청을 보내지만 원하는 방식(POST, PUT, DELETE 등)으로 바꿀 수 있고,
+//                      그 설정을 명시적으로 지정해야 한다.
+
+// fetch('/api/goals', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json'
+//   },
+//   body: JSON.stringify({
+//     date: '2025-07-28',
+//     emoji: '📌'
+//   })
+// });
+
+//method: HTTP 메서드 지정 (POST, PUT, DELETE 등)
+//headers: 요청 헤더 설정 (보통 JSON 전송 시 필수)
+//body: 전송할 실제 데이터 (문자열이어야 함 → JSON.stringify 필요)
+
+
 document.addEventListener('DOMContentLoaded', function () {
     const params = new URLSearchParams(window.location.search);
     const shouldActivateMenu = params.get('menu') === 'active';
@@ -171,10 +195,29 @@ function onNotificationClick(messageId, calendarId) {
 
 
 
-      const emojiMap = {
-        '2025-07-28': '💸',
-        '2025-08-02': '🌊'
-      };
+     let emojiMap = {};  // 날짜 -> emoji (항상 같은 이모지)
+
+     function fetchGoalDatesAndRender() {
+       fetch('/monthlyGoal/goalCount')  // 날짜만 주는 API
+         .then(res => res.json())
+//        날짜 배열을 받아서 각 날짜를 키로 하고 값은 항상 emoji인 객체(맵) 형태로 바꿔주는 것
+         .then(dates => {
+           // 모든 날짜에 동일 이모지 할당
+//           dates : ["2025-07-28", "2025-08-02"] 같은 배열
+//           acc : 객체를 누적할 객체 (초기값 : {})
+//           date : 현재 순회 중인 날짜 문자열
+           emojiMap = dates.reduce((acc, date) => {
+             acc[date] = '🌟';  // 객체의 key : date / 값 : emoji
+             return acc;
+           }, {});
+           renderCalendar();
+         })
+         .catch(err => {
+                 console.log(err.message);  // 목표 없어도 정상 처리
+                 emojiMap = {};             // ⛔ 없으면 빈 객체라도 초기화
+                 renderCalendar();          // ✅ 이모지 없어도 달력 그리기
+               });
+     }
 
       function renderCalendar() {
         const today = new Date();
@@ -248,10 +291,10 @@ function onNotificationClick(messageId, calendarId) {
             if (!res.ok || res.status === 204) {
               throw new Error("이번 달 목표 없음");
             }
-            return res.json();
+            return res.text();
           })
           .then(data => {
-            const title = data.title;
+            const title = data;
             document.getElementById('goal_nav2').textContent = `🌟${title}`;
             document.getElementById('goal_nav2').style.display = 'inline';
             document.getElementById('goal_nav1').style.display = 'none';
@@ -286,7 +329,9 @@ function onNotificationClick(messageId, calendarId) {
         eventList.innerHTML = html;
       }
 
-      renderCalendar();
+      fetchGoalDatesAndRender();
+
+      //renderCalendar();  // 렌더링 실행
       fetchMonthlyGoal();
       fetchTodayEvents();
       renderEvents();
