@@ -204,16 +204,21 @@ function onNotificationClick(messageId, calendarId) {
        fetch('/monthlyGoal/goalCount')  // 날짜만 주는 API
          .then(res => res.json())
 //        날짜 배열을 받아서 각 날짜를 키로 하고 값은 항상 emoji인 객체(맵) 형태로 바꿔주는 것
-         .then(dates => {
+         .then(data => {
+         const goalDates = data.goalDates;
          console.log('goalcount옴');
+         console.log('✅ 백엔드에서 받은 goalDates:', goalDates);
            // 모든 날짜에 동일 이모지 할당
 //           dates : ["2025-07-28", "2025-08-02"] 같은 배열
 //           acc : 객체를 누적할 객체 (초기값 : {})
 //           date : 현재 순회 중인 날짜 문자열
-           emojiMap = dates.reduce((acc, date) => {
+           emojiMap = goalDates.reduce((acc, date) => {
              acc[date] = '🌟';  // 객체의 key : date / 값 : emoji
              return acc;
            }, {});
+
+            console.log('✅ 생성된 emojiMap:', emojiMap); // 이걸 반드시 찍자!
+
            renderCalendar();
          })
          .catch(err => {
@@ -261,6 +266,11 @@ function onNotificationClick(messageId, calendarId) {
 
         for (let i = 1; i <= lastDay.getDate(); i++) {
           const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+
+
+  console.log('📅 검사 중인 날짜:', fullDate, '✅ emoji:', emojiMap[fullDate]); // 👈 여기 찍어!
+
+
           const d = document.createElement('div');
           d.className = 'day';
 

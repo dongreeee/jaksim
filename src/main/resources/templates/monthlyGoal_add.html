@@ -64,7 +64,7 @@
     <div class="calendar-widget2" id="calendar3" style="width:100%;" >
         <!-- JavaScript로 채워짐 -->
     </div>
-    <form id="monthlyForm" action="/monthlyGoal/addContent" method="post">
+    <form id="monthlyForm" action="/monthlyGoal/addContent" method="post" th:unless="${today}">
 
 
         <input type="hidden" class="goal-date" name="date" id="date" th:value="${date}">
@@ -193,14 +193,28 @@ let currentMonth = new Date().getMonth(); // 0 ~ 11
 
 // 🔁 월 변경 함수
 function changeMonth(offset) {
-  currentMonth += offset;
-  if (currentMonth < 0) {
-    currentMonth = 11;
-    currentYear -= 1;
-  } else if (currentMonth > 11) {
-    currentMonth = 0;
-    currentYear += 1;
+  let nextMonth = currentMonth + offset;
+  let nextYear = currentYear;
+
+  if (nextMonth < 0) {
+    nextMonth = 11;
+    nextYear -= 1;
+  } else if (nextMonth > 11) {
+    nextMonth = 0;
+    nextYear += 1;
   }
+
+  const nextYm = `${nextYear}-${String(nextMonth + 1).padStart(2, '0')}`;
+
+  // ✅ allowedMonths에 포함된 월인지 검사
+  if (!allowedMonths.includes(nextYm)) {
+    alert('해당 월은 기록이 없거나 볼 수 없는 달입니다.');
+    return;
+  }
+
+  // ✅ 월/년 변경 후 렌더링
+  currentMonth = nextMonth;
+  currentYear = nextYear;
   renderCalendar3();
 }
 
@@ -219,21 +233,28 @@ function changeMonth(offset) {
        fetch('/monthlyGoal/goalCount')  // 날짜만 주는 API
          .then(res => res.json())
 //        날짜 배열을 받아서 각 날짜를 키로 하고 값은 항상 emoji인 객체(맵) 형태로 바꿔주는 것
-         .then(dates => {
+         .then(data => {
+            const goalDates = data.goalDates;       // ['2025-07-01', '2025-07-12', ...]
+            const allowed = data.allowedMonths;     // ['2025-07', '2025-08']
+
          console.log('goalcount옴');
            // 모든 날짜에 동일 이모지 할당
 //           dates : ["2025-07-28", "2025-08-02"] 같은 배열
 //           acc : 객체를 누적할 객체 (초기값 : {})
 //           date : 현재 순회 중인 날짜 문자열
-           emojiMap = dates.reduce((acc, date) => {
+           emojiMap = goalDates.reduce((acc, date) => {
              acc[date] = '🌟';  // 객체의 key : date / 값 : emoji
              return acc;
            }, {});
+        // allowedMonths 저장 (이번달 포함 + 중복 제거는 서버에서 처리)
+           allowedMonths = allowed;
+
            renderCalendar3();
          })
          .catch(err => {
                  console.log(err.message);  // 목표 없어도 정상 처리
                  emojiMap = {};             // ⛔ 없으면 빈 객체라도 초기화
+                 allowedMonths = [];
                  renderCalendar3();          // ✅ 이모지 없어도 달력 그리기
                });
      }
@@ -263,17 +284,15 @@ fetch(`/monthlyGoal/info/${ym}`)
     const title = data.title;
     const goal_id = data.id;
     console.log(title);
-    const el1 = document.getElementById('goal_update');
-const el2 = document.getElementById('goal_add');
-const el3 = document.getElementById('goal_id');
+    const el3 = document.getElementById('goal_id');
 
-console.log('goal_update:', el1);  // null이면 아직 없는 것
-console.log('goal_add:', el2);
-console.log('goal_id:', el3);
     document.getElementById('goal_update').textContent = `🌟 이번달 목표: ${title}`;
     document.getElementById('goal_update').style.display = 'inline';
     document.getElementById('goal_add').style.display = 'none';
-    document.getElementById('goal_id').value = `${goal_id}`;
+    if(el3){
+         document.getElementById('goal_id').value = `${goal_id}`;
+    }
+
   })
   .catch(err => {
     console.log(err.message);

@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface MonthlyGoalRepository extends JpaRepository<MonthlyGoal, Long> {
     Optional<MonthlyGoal> findByUsernameAndDateYm(String username, String dateym);
+    List<MonthlyGoal> findByUsername(String username);
 }
