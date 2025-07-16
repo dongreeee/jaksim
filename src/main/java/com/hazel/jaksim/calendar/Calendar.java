@@ -1,5 +1,6 @@
 package com.hazel.jaksim.calendar;
 
+import com.hazel.jaksim.map.Map;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +24,10 @@ public class Calendar {
     private String content;
     private String sdate;
     private String edate;
+
+    @ManyToOne
+    @JoinColumn(name = "map_id", nullable = true)
+    private Map map;
 
     @Column(name = "regdate", insertable = false, updatable = false)
     private LocalDateTime regdate;

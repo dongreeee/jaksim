@@ -1,5 +1,6 @@
 package com.hazel.jaksim.calendar;
 
+import com.hazel.jaksim.map.MapService;
 import com.hazel.jaksim.member.Member;
 import com.hazel.jaksim.member.MemberRepository;
 import com.hazel.jaksim.websoket.Message;
@@ -25,10 +26,13 @@ import java.util.Optional;
 public class CalendarController {
 
     private final CalendarRepository calendarRepository;
-    private final CalendarService calendarService;
     private final MemberRepository memberRepository;
     private final MessageRepository messageRepository;
     private final SimpMessagingTemplate messagingTemplate;
+
+
+    private final CalendarService calendarService;
+    private final MapService mapService;
 
     @GetMapping("/calendar")
     public String calendar(Model model, Authentication auth){
@@ -53,22 +57,26 @@ public class CalendarController {
     }
 
     @PostMapping("/addCalender")
-    public String addCalender(String title,
-                              String title_color,
-                              String content,
-                              String sdate,
-                              String edate,
+    public String addCalender(@RequestParam Map<String, Object> formData,
                               Authentication auth){
-        try{
-            Calendar calendar = new Calendar();
-            calendar.setTitle(title);
-            calendar.setTitle_color(title_color);
-            calendar.setContent(content);
-            calendar.setSdate(sdate);
-            calendar.setEdate(edate);
-            calendar.setUsername(auth.getName());
 
-            calendarRepository.save(calendar);
+        System.out.println("form : !!!!!!!!!! " + formData);
+
+        try{
+             if((Boolean)formData.get("mapChk")){
+
+             }
+
+
+//            Calendar calendar = new Calendar();
+//            calendar.setTitle(title);
+//            calendar.setTitle_color(title_color);
+//            calendar.setContent(content);
+//            calendar.setSdate(sdate);
+//            calendar.setEdate(edate);
+//            calendar.setUsername(auth.getName());
+//
+//            calendarRepository.save(calendar);
             return "redirect:/calendar";
         }
         catch (Exception e){

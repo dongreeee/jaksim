@@ -6,58 +6,207 @@
     <link href="/styles.css" rel="stylesheet"/>
     <title>모바일 입력 폼</title>
     <style>
-<!--        label {-->
-<!--          display: block;-->
-<!--          margin-top: 16px;-->
-<!--          margin-bottom: 6px;-->
-<!--          font-weight: bold;-->
-<!--        }-->
+        /* 기존 CSS 스타일 ... */
 
-         .label-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 16px;
-      margin-bottom: 6px;
-    }
-    .label-row label {
-      font-weight: bold;
-    }
+        .label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+        .label-row label {
+            font-weight: bold;
+        }
 
-     input[type="color"] {
-      width: 30px;
-      height: 30px;
-      border: none;
-      padding: 0;
-      background: none;
-      cursor: pointer;
-    }
+        input[type="color"] {
+            width: 30px;
+            height: 30px;
+            border: none;
+            padding: 0;
+            background: none;
+            cursor: pointer;
+        }
 
         input[type="text"],
         input[type="date"],
         textarea {
-          width: 100%;
-          padding: 12px;
-          font-size: 16px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          box-sizing: border-box;
-          margin-bottom: 12px;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
         }
         textarea {
-          resize: vertical;
-          min-height: 100px;
+            resize: vertical;
+            min-height: 100px;
         }
         .save-btn {
-          width: 100%;
-          padding: 14px;
-          font-size: 16px;
-          background-color: black;
-          color: white;
-          cursor: pointer;
-          margin-top: 16px;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            background-color: black;
+            color: white;
+            cursor: pointer;
+            margin-top: 16px;
         }
 
+        #map {
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            border: solid 1px #ccc;
+            margin-bottom: 12px; /* 추가: 지도 아래 여백 */
+        }
+
+        .map-search-input-group { /* 추가: 장소 입력창과 검색 버튼을 묶기 위한 flex container */
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+        }
+
+        .map-search-input-group input[type="text"] {
+            flex-grow: 1; /* 입력창이 가능한 공간을 모두 차지하도록 */
+            margin-bottom: 0; /* 기존 input[type="text"]의 margin-bottom 제거 */
+        }
+
+        .map-search-btn {
+            /* width: 20%; */ /* 고정 너비 대신 content에 맞게 조절 */
+            padding: 12px 15px; /* 버튼 패딩 조정 */
+            margin-left: 10px; /* 입력창과의 간격 */
+            background-color: black;
+            color: white;
+            border: none; /* 버튼 기본 테두리 제거 */
+            border-radius: 8px; /* 통일된 border-radius */
+            cursor: pointer;
+            font-size: 16px;
+            white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+        }
+
+        /* --- 모달 관련 CSS 추가 --- */
+        .modal {
+            display: none; /* 초기에는 숨김 */
+            position: fixed; /* 고정 위치 */
+            z-index: 1000; /* 다른 요소 위에 표시 */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* 내용이 넘칠 경우 스크롤 */
+            background-color: rgba(0,0,0,0.4); /* 배경을 어둡게 */
+            justify-content: center; /* 수평 가운데 정렬 */
+            align-items: center; /* 수직 가운데 정렬 */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto; /* 가운데 정렬 (display: block일 때) */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%; /* 모바일 환경에 맞게 너비 조정 */
+            max-width: 500px; /* 최대 너비 설정 */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            position: relative;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute; /* 닫기 버튼을 우측 상단에 고정 */
+            top: 22px;
+            right: 20px;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #menu_wrap {
+            position: static; /* 모달 내부에 있으므로 absolute 해제 */
+            width: 100%;
+            height: 300px; /* 검색 결과 목록의 높이 */
+            overflow-y: auto; /* 내용이 넘치면 스크롤 */
+            margin-top: 10px;
+            padding-right: 5px; /* 스크롤바 영역 고려 */
+            box-sizing: border-box;
+        }
+
+        #placesList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+
+        #placesList .item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: left;
+            cursor: pointer; /* 클릭 가능하도록 커서 변경 */
+        }
+
+        #placesList .item:last-child {
+            border-bottom: none;
+        }
+
+        #placesList .item .markerbg {
+            background: url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png) no-repeat;
+            display: inline-block;
+            width: 36px;
+            height: 37px;
+            margin-right: 10px;
+            background-position: 0px 0px; /* 초기 위치 */
+        }
+        /* marker number는 JavaScript에서 동적으로 설정 */
+
+        #placesList .item .info {
+            flex-grow: 1;
+        }
+
+        #placesList .item h5 {
+            font-size: 14px;
+        }
+
+        #placesList .item span {
+            font-size: 12px;
+        }
+
+        #placesList .item .info .gray {
+            color: #8a8a8a;
+        }
+
+        #placesList .item .info .tel {
+            color: #009900;
+        }
+
+        #pagination {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        #pagination a {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 0 3px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            color: black;
+            text-decoration: none;
+        }
+
+        #pagination a.on {
+            background-color: black;
+            color: white;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -74,32 +223,334 @@
         </div>
 
         <textarea id="content" name="content" placeholder="내용을 입력하세요"></textarea>
+        <div style="display: flex;">
+            <div style="width:100%">
+                <div class="label-row">
+                    <label for="sdate">시작 날짜</label>
+                </div>
 
-        <div class="label-row">
-            <label for="sdate">시작 날짜</label>
+                <input type="date" id="sdate" name="sdate" th:value="${date}">
+
+            </div>
+            <div style="margin-left: 10px; width:100%">
+                <div class="label-row">
+                    <label for="edate">종료 날짜</label>
+                </div>
+
+                <input type="date" id="edate" name="edate" th:value="${date}">
+
+            </div>
+
         </div>
 
-        <input type="date" id="sdate" name="sdate" th:value="${date}">
+        <div class="map-search-input-group"> <input type="text" id="map_keyword" name="map_keyword" placeholder="장소 입력">
+            <button type="button" class="map-search-btn" onclick="openPlaceSearchModal()">검색</button> </div>
 
-        <div class="label-row">
-            <label for="edate">종료 날짜</label>
-        </div>
+        <input type="hidden" id="mapChk" name="mapChk">
+        <input type="hidden" id="selectedPlaceName" name="selectedPlaceName">
+        <input type="hidden" id="selectedPlaceAddress" name="selectedPlaceAddress">
+        <input type="hidden" id="selectedPlaceLat" name="selectedPlaceLat">
+        <input type="hidden" id="selectedPlaceLng" name="selectedPlaceLng">
+        <input type="hidden" id="selectedPlaceUrl" name="selectedPlaceUrl">
+        <div id="selectedPlaceInfo" style="margin-bottom: 12px; "></div>
 
-        <input type="date" id="edate" name="edate" th:value="${date}">
+        <div id="map"></div>
 
-        <button class="save-btn" type="submit" onclick="submitForm()">저장하기</button>
+        <button class="save-btn" type="submit">저장하기</button>
     </form>
+</div>
 
+<div id="placeSearchModal" class="modal">
+    <div class="modal-content">
+
+        <div id="modal_search_input_group" style="display: flex; margin-bottom: 10px; align-items: center;">
+            <div style="flex: 6; margin-right: 10px;"> <input type="text" id="modal_map_keyword" placeholder="장소명 검색" style="width: 100%; margin-bottom: 0;">
+            </div>
+            <div style="flex: 3; margin-right: 10px;"> <button type="button" class="map-search-btn" onclick="searchPlacesInModal()" style="width: 100%; margin-left: 0;">검색</button>
+            </div>
+            <div style="flex: 1; text-align: right;"> <span class="close-button" onclick="closePlaceSearchModal()" style="position: static; float: none;">&times;</span>
+            </div>
+        </div>
+        <div id="menu_wrap">
+            <ul id="placesList"></ul>
+            <div id="pagination"></div>
+        </div>
+    </div>
 </div>
 
 
-
-<!-- STOMP & SockJS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
-<!-- 공통 WebSocket 연결 스크립트 -->
 <script src="/common.js"></script>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=db0946b54e87a1652fbd99ff96a402de&libraries=services"></script>
+
+<script>
+    var markers = [];
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+        mapOption = {
+            center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
+            level: 3 // 지도의 확대 레벨
+        };
+
+    // 지도를 생성합니다
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+
+    // 장소 검색 객체를 생성합니다
+    var ps = new kakao.maps.services.Places();
+
+    // 검색 결과 목록이나 마커를 클릭했을 때 장소명을 표출할 인포윈도우를 생성합니다
+    var infowindow = new kakao.maps.InfoWindow({zIndex:1});
+
+    // 모달 관련 요소들
+    var placeSearchModal = document.getElementById('placeSearchModal');
+    var modalMapKeywordInput = document.getElementById('modal_map_keyword'); // 모달 내 검색 input
+    var placesListEl = document.getElementById('placesList'); // 모달 내 검색 결과 목록
+    var paginationEl = document.getElementById('pagination'); // 모달 내 페이지네이션
+
+    // 검색된 장소 정보를 저장할 변수
+    var selectedPlaceData = null;
+
+    // 모달 열기 함수
+    function openPlaceSearchModal() {
+        placeSearchModal.style.display = 'flex'; // flex로 변경하여 가운데 정렬
+        // 기존 입력된 키워드가 있다면 모달 검색창에 자동 입력
+        modalMapKeywordInput.value = document.getElementById('map_keyword').value;
+        // 모달 열릴 때 바로 검색 실행 (선택 사항)
+        searchPlacesInModal();
+    }
+
+    // 모달 닫기 함수
+    function closePlaceSearchModal() {
+        placeSearchModal.style.display = 'none';
+    }
+
+    // 모달 외부 클릭 시 모달 닫기
+    window.onclick = function(event) {
+        if (event.target == placeSearchModal) {
+            closePlaceSearchModal();
+        }
+    };
+
+    // 모달 내에서 키워드 검색을 요청하는 함수
+    function searchPlacesInModal() {
+        var keyword = modalMapKeywordInput.value;
+
+        if (!keyword.replace(/^\s+|\s+$/g, '')) {
+            alert('키워드를 입력해주세요!');
+            return false;
+        }
+
+        // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
+        ps.keywordSearch( keyword, placesSearchCB);
+    }
+
+    // 장소검색이 완료됐을 때 호출되는 콜백함수 입니다
+    function placesSearchCB(data, status, pagination) {
+        if (status === kakao.maps.services.Status.OK) {
+            // 정상적으로 검색이 완료됐으면
+            // 검색 목록과 마커를 표출합니다
+            displayPlaces(data);
+
+            // 페이지 번호를 표출합니다
+            displayPagination(pagination);
+
+        } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+            removeAllChildNods(placesListEl); // 검색 결과 없으면 목록 비우기
+            paginationEl.innerHTML = ''; // 페이지네이션 비우기
+            alert('검색 결과가 존재하지 않습니다.');
+            return;
+
+        } else if (status === kakao.maps.services.Status.ERROR) {
+            alert('검색 결과 중 오류가 발생했습니다.');
+            return;
+        }
+    }
+
+     // 검색 결과 목록과 마커를 표출하는 함수입니다
+     function displayPlaces(places) {
+        var menuEl = document.getElementById('menu_wrap');
+        var fragment = document.createDocumentFragment();
+        var bounds = new kakao.maps.LatLngBounds();
+
+        // 검색 결과 목록에 추가된 항목들을 제거합니다
+        removeAllChildNods(placesListEl);
+
+        // 지도에 표시되고 있는 마커를 제거합니다 (이 부분은 유지하여 기존 마커를 지웁니다)
+        removeMarker();
+
+        for ( var i=0; i<places.length; i++ ) {
+            // 마커를 생성하고 지도에 표시하는 부분은 여기에서 제거합니다.
+            // 마커는 장소 클릭 시 selectPlace 함수에서 생성할 것입니다.
+            var placePosition = new kakao.maps.LatLng(places[i].y, places[i].x);
+
+            // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
+            // LatLngBounds 객체에 좌표를 추가합니다
+            bounds.extend(placePosition);
+
+            // 검색 결과 항목 Element를 생성합니다
+            var itemEl = getListItem(i, places[i]);
+
+            // 목록 항목 클릭 시 장소 선택 및 모달 닫기
+            (function(place) { // 클로저를 사용하여 클릭 이벤트에 장소 정보 전달
+                itemEl.onclick = function() {
+                    selectPlace(place); // 장소 선택 함수 호출
+                    closePlaceSearchModal(); // 장소 선택 후 모달 닫기
+                };
+            })(places[i]); // place 변수를 클로저로 전달
+
+            fragment.appendChild(itemEl);
+        }
+
+        // 검색결과 항목들을 검색결과 목록 Element에 추가합니다
+        placesListEl.appendChild(fragment);
+        menuEl.scrollTop = 0;
+
+        // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
+        map.setBounds(bounds);
+    }
+
+    // 검색결과 항목을 Element로 반환하는 함수입니다
+    function getListItem(index, place) {
+        var el = document.createElement('li'),
+            itemStr = '<div class="info">' +
+                      '   <h5>' + place.place_name + '</h5>';
+
+        if (place.road_address_name) {
+            itemStr += '    <span>' + place.road_address_name + '</span>' +
+                        '</br>' +
+                       '   <span class="jibun gray">' +  place.address_name  + '</span>';
+        } else {
+            itemStr += '    <span>' +  place.address_name  + '</span>';
+        }
+
+        itemStr += '</div>';
+
+        el.innerHTML = itemStr;
+        el.className = 'item';
+
+        return el;
+    }
+
+    // 마커를 생성하고 지도 위에 마커를 표시하는 함수입니다
+    function addMarker(position, idx, title) {
+        var imageSrc = '../images/map-icon.png'; // 마커 이미지 url, 스프라이트 이미지를 씁니다
+              // 아이콘 이미지의 실제 크기에 맞춰 설정해주세요.
+    // 예시: 가로 40px, 세로 40px 아이콘인 경우
+    var imageSize = new kakao.maps.Size(30, 30);
+
+// 마커 이미지를 지도 좌표에 정확히 일치시킬 이미지 내의 기준점 (offset) 설정
+// 보통 아이콘 이미지의 '하단 중앙'을 기준으로 하는 경우가 많습니다.
+// 예시: 가로 40px, 세로 40px 아이콘의 경우, (가로/2, 세로 전체)
+var offset = new kakao.maps.Point(15, 30); // (imageSize.width / 2, imageSize.height)
+
+// 스프라이트 이미지 관련 옵션은 단일 아이콘 사용 시 필요 없습니다.
+// 따라서 imgOptions 객체는 다음과 같이 간단하게 만들거나, 아예 생략할 수 있습니다.
+var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, {
+    offset: offset // 필요한 offset만 지정
+});
+            marker = new kakao.maps.Marker({
+                position: position, // 마커의 위치
+                image: markerImage
+            });
+
+        marker.setMap(map); // 지도 위에 마커를 표출합니다
+        markers.push(marker);   // 배열에 생성된 마커를 추가합니다
+
+        return marker;
+    }
+
+    // 지도 위에 표시되고 있는 마커를 모두 제거합니다
+    function removeMarker() {
+        for ( var i = 0; i < markers.length; i++ ) {
+            markers[i].setMap(null);
+        }
+        markers = [];
+    }
+
+    // 검색결과 목록 하단에 페이지번호를 표시는 함수입니다
+    function displayPagination(pagination) {
+        // var paginationEl = document.getElementById('pagination'); // 이 부분도 모달 내의 paginationEl 사용
+        var fragment = document.createDocumentFragment(),
+            i;
+
+        // 기존에 추가된 페이지번호를 삭제합니다
+        while (paginationEl.hasChildNodes()) {
+            paginationEl.removeChild (paginationEl.lastChild);
+        }
+
+        for (i=1; i<=pagination.last; i++) {
+            var el = document.createElement('a');
+            el.href = "#";
+            el.innerHTML = i;
+
+            if (i===pagination.current) {
+                el.className = 'on';
+            } else {
+                el.onclick = (function(i) {
+                    return function() {
+                        pagination.gotoPage(i);
+                    }
+                })(i);
+            }
+
+            fragment.appendChild(el);
+        }
+        paginationEl.appendChild(fragment);
+    }
+
+    // 검색결과 목록 또는 마커를 클릭했을 때 호출되는 함수입니다
+    // 인포윈도우에 장소명을 표시합니다
+    function displayInfowindow(marker, title) {
+        var content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
+
+        infowindow.setContent(content);
+        infowindow.open(map, marker);
+    }
+
+    // 검색결과 목록의 자식 Element를 제거하는 함수입니다
+    function removeAllChildNods(el) {
+        if (el) { // el이 null이 아닌지 확인하는 방어 코드 추가
+            while (el.hasChildNodes()) {
+                el.removeChild (el.lastChild);
+            }
+        }
+    }
+
+   // 장소 선택 시 메인 폼에 정보 업데이트 및 모달 닫기
+   function selectPlace(place) {
+        selectedPlaceData = place; // 선택된 장소 데이터 저장
+
+        // 1. 기존 마커 모두 제거
+        removeMarker();
+
+        // 2. 선택된 장소에만 마커 추가
+        var placePosition = new kakao.maps.LatLng(place.y, place.x);
+        var newMarker = addMarker(placePosition, 0, place.place_name); // idx는 0으로 고정 (하나만 찍을 것이므로)
+
+        // 3. 새로 생성된 마커에 인포윈도우 표시
+        //displayInfowindow(newMarker, place.place_name);
+
+        // 4. 메인 입력창 및 숨김 필드 업데이트
+        document.getElementById('map_keyword').value = place.place_name; // 메인 입력창에 장소명 표시
+        document.getElementById('selectedPlaceInfo').innerText = '선택된 장소: ' + place.place_name + ' (' + (place.road_address_name || place.address_name) + ')';
+
+        // Hidden input에 상세 정보 저장 (폼 전송 시 사용)
+        document.getElementById('mapChk').value = true;
+        document.getElementById('selectedPlaceName').value = place.place_name;
+        document.getElementById('selectedPlaceAddress').value = place.road_address_name || place.address_name;
+        document.getElementById('selectedPlaceLat').value = place.y;
+        document.getElementById('selectedPlaceLng').value = place.x;
+        document.getElementById('selectedPlaceUrl').value = place.place_url;
+
+        closePlaceSearchModal(); // 모달 닫기
+        // 5. 선택된 장소로 지도 중심 이동
+        map.panTo(placePosition);
+    }
+
+
+</script>
 
 <script>
     const startInput = document.getElementById('sdate');
@@ -121,8 +572,6 @@
         }
       }
     });
-
-
 </script>
 
 <script>
@@ -149,9 +598,15 @@
         event.preventDefault();
         return;
       }
+
+      // 장소 정보가 선택되었는지 확인 (선택 사항)
+      if (!document.getElementById('selectedPlaceName').value) {
+          // alert("장소를 검색하고 선택해주세요.");
+          // event.preventDefault();
+          // return;
+      }
     });
 </script>
-
 
 </body>
 </html>
