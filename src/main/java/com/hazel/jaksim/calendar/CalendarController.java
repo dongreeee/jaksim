@@ -1,5 +1,7 @@
 package com.hazel.jaksim.calendar;
 
+import com.hazel.jaksim.calendar.dto.CalendarFormDto;
+import com.hazel.jaksim.map.MapRepository;
 import com.hazel.jaksim.map.MapService;
 import com.hazel.jaksim.member.Member;
 import com.hazel.jaksim.member.MemberRepository;
@@ -28,6 +30,7 @@ public class CalendarController {
     private final CalendarRepository calendarRepository;
     private final MemberRepository memberRepository;
     private final MessageRepository messageRepository;
+    private final MapRepository mapRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
 
@@ -50,33 +53,48 @@ public class CalendarController {
 
     @GetMapping("/editCalendarView/{id}")
     public String editCalendar(@PathVariable Long id, Model model ){
-        Calendar calendar = new Calendar();
-        Optional<Calendar> result = calendarRepository.findById(id);
-        model.addAttribute("calendar",result.get());
+        Optional<Calendar> calendar = calendarRepository.findById(id);
+        Optional<com.hazel.jaksim.map.Map> map = mapRepository.findById(calendar.get().getId());
+
+        CalendarFormDto dto = new CalendarFormDto();
+        dto.setTitle(calendar.get().getTitle());
+        dto.setTitleColor(calendar.get().getTitle_color());
+        dto.setContent(calendar.get().getContent());
+        dto.setSdate(calendar.get().getSdate());
+        dto.setEdate(calendar.get().getEdate());
+        dto.setSelectedPlaceAddress(map.get().getPlaceAddress());
+        dto.setSelectedPlaceName(map.get().getPlaceName());
+        dto.setSelectedPlaceLat(map.get().getPlaceX());
+        dto.setSelectedPlaceLng(map.get().getPlaceY());
+        dto.setSelectedPlaceUrl(map.get().getPlaceUrl());
+        model.addAttribute("dto", dto);
         return "calendar_edit.html";
     }
 
     @PostMapping("/addCalender")
-    public String addCalender(@RequestParam Map<String, Object> formData,
+    public String addCalender(@ModelAttribute CalendarFormDto formDto,
                               Authentication auth){
-
-        System.out.println("form : !!!!!!!!!! " + formData);
-
+        Long map_id;
+        Optional<com.hazel.jaksim.map.Map>map = Optional.empty();
         try{
-             if((Boolean)formData.get("mapChk")){
-
+//            System.out.println(formDto.toString());
+             if(formDto.isMapChk()){
+                 map = mapService.addMap(formDto);
              }
 
+            Calendar calendar = new Calendar();
+            calendar.setTitle(formDto.getTitle());
+            calendar.setTitle_color(formDto.getTitleColor());
+            calendar.setContent(formDto.getContent());
+            calendar.setSdate(formDto.getSdate());
+            calendar.setEdate(formDto.getEdate());
+            calendar.setUsername(auth.getName());
 
-//            Calendar calendar = new Calendar();
-//            calendar.setTitle(title);
-//            calendar.setTitle_color(title_color);
-//            calendar.setContent(content);
-//            calendar.setSdate(sdate);
-//            calendar.setEdate(edate);
-//            calendar.setUsername(auth.getName());
-//
-//            calendarRepository.save(calendar);
+            if(map.isPresent()){
+                calendar.setMap(map.get());
+            }
+
+            calendarRepository.save(calendar);
             return "redirect:/calendar";
         }
         catch (Exception e){

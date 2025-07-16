@@ -12,7 +12,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 16px;
+      margin-top: 6px;
       margin-bottom: 6px;
     }
     .label-row label {
@@ -26,7 +26,6 @@
       padding: 0;
       background: none;
       cursor: pointer;
-      margin-top : 5px;
     }
 
         input[type="text"],
@@ -38,7 +37,6 @@
           border: 1px solid #ccc;
           border-radius: 8px;
           box-sizing: border-box;
-          margin-bottom: 12px;
         }
         textarea {
           resize: vertical;
@@ -65,7 +63,14 @@
           height: 250px;
           border-radius: 10px;
           border: solid 1px #ccc;
+          margin-top: 6px;
         }
+
+        .customoverlay {position:relative;bottom:85px;border-radius:6px;border: 1px solid #ccc;border-bottom:2px solid #ddd;float:left;}
+.customoverlay:nth-of-type(n) {border:0; box-shadow:0px 1px 2px #888;}
+.customoverlay a {display:block;text-decoration:none;color:#000;text-align:center;border-radius:6px;font-size:14px;font-weight:bold;overflow:hidden;background: #d95050;background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;}
+.customoverlay .title {display:block;text-align:center;background:#fff;margin-right:35px;padding:10px 15px;font-size:14px;font-weight:bold;}
+.customoverlay:after {content:'';position:absolute;margin-left:-12px;left:50%;bottom:-12px;width:22px;height:12px;background:url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')}
     </style>
 </head>
 <body>
@@ -73,7 +78,7 @@
 <div class="container" style="margin-top:30px; padding:20px;">
     <form id="calendarForm" action="/editCalender" method="post">
         <div class="label-row">
-            <input type="hidden" name="id" id="calendar_id" th:value="${calendar.id}">
+            <input type="hidden" name="id" id="calendar_id" th:value="${dto.id}">
             <label for="title">제목</label>
             <div style="width:70%;">
                 <input type="color" name="title_color" id="color" th:value="${calendar.title_color}">
@@ -87,20 +92,27 @@
         </div>
 
         <textarea id="content" name="content" placeholder="내용을 입력하세요" th:text="${calendar.content}"></textarea>
+        <div style="display: flex;">
+            <div style="width:100%">
+                <div class="label-row">
+                    <label for="sdate">시작 날짜</label>
+                </div>
+
+                <input type="date" id="sdate" name="sdate" th:value="${date}">
+
+            </div>
+            <div style="margin-left: 10px; width:100%">
+                <div class="label-row">
+                    <label for="edate">종료 날짜</label>
+                </div>
+
+                <input type="date" id="edate" name="edate" th:value="${date}">
+
+            </div>
+
+        </div>
 
         <div id="map" ></div>
-
-        <div class="label-row">
-            <label for="sdate">시작 날짜</label>
-        </div>
-
-        <input type="date" id="sdate" name="sdate" th:value="${calendar.sdate}">
-
-        <div class="label-row">
-            <label for="edate">종료 날짜</label>
-        </div>
-
-        <input type="date" id="edate" name="edate"  th:value="${calendar.edate}">
 
         <button type="submit" class="save-btn" onclick="submitForm()">수정하기</button>
     </form>
@@ -126,13 +138,48 @@
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=	db0946b54e87a1652fbd99ff96a402de"></script>
 
 <script>
-    var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
-var options = { //지도를 생성할 때 필요한 기본 옵션
-	center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.
-	level: 3 //지도의 레벨(확대, 축소 정도)
-};
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+   mapOption = {
+         center: new kakao.maps.LatLng(37.54699, 127.09598), // 지도의 중심좌표
+         level: 4 // 지도의 확대 레벨
+     };
 
-var map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+ var map = new kakao.maps.Map(mapContainer, mapOption);
+
+ var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png', // 마커이미지의 주소입니다
+     imageSize = new kakao.maps.Size(64, 69), // 마커이미지의 크기입니다
+     imageOption = {offset: new kakao.maps.Point(27, 69)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+
+ // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+ var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
+     markerPosition = new kakao.maps.LatLng(37.54699, 127.09598); // 마커가 표시될 위치입니다
+
+ // 마커를 생성합니다
+ var marker = new kakao.maps.Marker({
+   position: markerPosition,
+   image: markerImage // 마커이미지 설정
+ });
+
+ // 마커가 지도 위에 표시되도록 설정합니다
+ marker.setMap(map);
+
+ // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+ var content = '<div class="customoverlay">' +
+     '  <a href="https://map.kakao.com/link/map/11394059" target="_blank">' +
+     '    <span class="title">구의야구공원</span>' +
+     '  </a>' +
+     '</div>';
+
+ // 커스텀 오버레이가 표시될 위치입니다
+ var position = new kakao.maps.LatLng(37.54699, 127.09598);
+
+ // 커스텀 오버레이를 생성합니다
+ var customOverlay = new kakao.maps.CustomOverlay({
+     map: map,
+     position: position,
+     content: content,
+     yAnchor: 1
+ });
 </script>
 
 <script>
