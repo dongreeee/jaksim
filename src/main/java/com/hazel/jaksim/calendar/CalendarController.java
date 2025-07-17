@@ -1,6 +1,7 @@
 package com.hazel.jaksim.calendar;
 
 import com.hazel.jaksim.calendar.dto.CalendarFormDto;
+import com.hazel.jaksim.calendar.dto.CalendarResponse;
 import com.hazel.jaksim.map.MapRepository;
 import com.hazel.jaksim.map.MapService;
 import com.hazel.jaksim.member.Member;
@@ -54,19 +55,34 @@ public class CalendarController {
     @GetMapping("/editCalendarView/{id}")
     public String editCalendar(@PathVariable Long id, Model model ){
         Optional<Calendar> calendar = calendarRepository.findById(id);
-        Optional<com.hazel.jaksim.map.Map> map = mapRepository.findById(calendar.get().getId());
+        Optional<com.hazel.jaksim.map.Map> map = mapRepository.findById(calendar.get().getMap().getId());
 
-        CalendarFormDto dto = new CalendarFormDto();
+//        private Long CalendarId;
+//        private String titleColor;
+//        private String title;
+//        private String content;
+//        private String sdate;
+//        private String edate;
+//        private String selectedPlaceName;
+//        private String selectedPlaceAddress;
+//        private double selectedPlaceLat;
+//        private double selectedPlaceLng;
+//        private String selectedPlaceUrl;
+
+        CalendarResponse dto = new CalendarResponse();
+        dto.setCalendarId(id);
         dto.setTitle(calendar.get().getTitle());
         dto.setTitleColor(calendar.get().getTitle_color());
         dto.setContent(calendar.get().getContent());
         dto.setSdate(calendar.get().getSdate());
         dto.setEdate(calendar.get().getEdate());
-        dto.setSelectedPlaceAddress(map.get().getPlaceAddress());
         dto.setSelectedPlaceName(map.get().getPlaceName());
+        dto.setSelectedPlaceAddress(map.get().getPlaceAddress());
         dto.setSelectedPlaceLat(map.get().getPlaceX());
         dto.setSelectedPlaceLng(map.get().getPlaceY());
         dto.setSelectedPlaceUrl(map.get().getPlaceUrl());
+
+
         model.addAttribute("dto", dto);
         return "calendar_edit.html";
     }
