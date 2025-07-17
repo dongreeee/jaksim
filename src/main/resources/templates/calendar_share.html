@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/styles.css" rel="stylesheet"/>
+
+    <title>모바일 입력 폼</title>
+    <style>
+
+         .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+    .label-row label {
+      font-weight: bold;
+    }
+
+     input[type="color"] {
+      width: 30px;
+      height: 30px;
+      border: none;
+      padding: 0;
+      background: none;
+      cursor: pointer;
+    }
+
+        input[type="text"],
+        input[type="date"],
+        textarea {
+          width: 100%;
+          padding: 12px;
+          font-size: 16px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          box-sizing: border-box;
+        }
+        textarea {
+          resize: vertical;
+          min-height: 100px;
+        }
+        .save-btn {
+          width: 100%;
+          padding: 14px;
+          font-size: 16px;
+          background-color: black;
+          color: white;
+          cursor: pointer;
+          margin-top: 16px;
+        }
+
+
+
+        button:hover {
+          background-color: #0056b3;
+        }
+
+        #map{
+          width: 100%;
+          height: 250px;
+          border-radius: 10px;
+          border: solid 1px #ccc;
+          margin-top: 6px;
+        }
+
+        .customoverlay {position:relative;bottom:50px;border-radius:6px;border: 1px solid #ccc;border-bottom:2px solid #ddd;float:left;}
+.customoverlay:nth-of-type(n) {border:0; box-shadow:0px 1px 2px #888;}
+.customoverlay a {display:block;text-decoration:none;color:#000;text-align:center;border-radius:6px;font-size:14px;font-weight:bold;overflow:hidden;background: #d95050;background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;}
+.customoverlay .title {display:block;text-align:center;background:#fff;margin-right:35px;padding:10px 15px;font-size:14px;font-weight:bold;}
+.customoverlay:after {content:'';position:absolute;margin-left:-12px;left:50%;bottom:-12px;width:22px;height:12px;background:url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')}
+    </style>
+</head>
+<body>
+
+<input type="hidden" name="isMapChk" id="isMapChk" th:value="${dto.isMapChk}">
+<input type="hidden" name="selectedPlaceName" id="selectedPlaceName" th:value="${dto.selectedPlaceName}">
+<input type="hidden" name="selectedPlaceAddress" id="selectedPlaceAddress" th:value="${dto.selectedPlaceAddress}">
+<input type="hidden" name="SelectedPlaceLat" id="selectedPlaceLat" th:value="${dto.SelectedPlaceLat}">
+<input type="hidden" name="selectedPlaceLng" id="selectedPlaceLng" th:value="${dto.selectedPlaceLng}">
+<input type="hidden" name="selectedPlaceUrl" id="selectedPlaceUrl" th:value="${dto.selectedPlaceUrl}">
+
+<div th:replace="~{nav.html::navbar}"></div>
+<div class="container" style="margin-top:30px; padding:20px;">
+    <form id="calendarForm" action="/editCalender" method="post">
+        <div class="label-row">
+            <input type="hidden" name="id" id="calendar_id" th:value="${dto.calendarId}">
+            <label for="title">제목</label>
+            <div style="width:70%;">
+                <input type="color" name="title_color" id="color" th:value="${dto.titleColor}">
+            </div>
+                <img src="/images/share-icon.png" class="share-icon"  onclick="openModal()">
+        </div>
+        <input type="text" id="title" name="title" placeholder="제목을 입력하세요" th:value="${dto.title}">
+
+        <div class="label-row">
+            <label for="content">내용</label>
+        </div>
+
+        <textarea id="content" name="content" placeholder="내용을 입력하세요" th:text="${dto.content}"></textarea>
+        <div style="display: flex;">
+            <div style="width:100%">
+                <div class="label-row">
+                    <label for="sdate">시작 날짜</label>
+                </div>
+
+                <input type="date" id="sdate" name="sdate" th:value="${dto.sdate}">
+
+            </div>
+            <div style="margin-left: 10px; width:100%">
+                <div class="label-row">
+                    <label for="edate">종료 날짜</label>
+                </div>
+
+                <input type="date" id="edate" name="edate" th:value="${dto.edate}">
+
+            </div>
+
+        </div>
+
+        <div id="map" style="display:none;" ></div>
+
+        <button type="submit" class="save-btn" onclick="submitForm()">수정하기</button>
+    </form>
+    <a class="delete-btn"  href="#" th:attr="data-id=${dto.calendarId}" onclick="deleteItem(event, this);">삭제하기</a>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <input type="text" name="share_id" id="share_id" placeholder="아이디를 입력하세요" />
+        <button onclick="share()">공유하기</button>
+    </div>
+</div>
+
+<!-- STOMP & SockJS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<!-- 공통 WebSocket 연결 스크립트 -->
+<script src="/common.js"></script>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=	db0946b54e87a1652fbd99ff96a402de"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+<!--    boolean으로 변환 -->
+        const shouldCreateMap = document.getElementById('isMapChk').value === "true";
+        const placeName =  document.getElementById('selectedPlaceName').value;
+        const placeAddress =  document.getElementById('selectedPlaceAddress').value;
+        const placeLat =  document.getElementById('selectedPlaceLat').value;
+        const placeLng =  document.getElementById('selectedPlaceLng').value;
+        const placeUrl =  document.getElementById('selectedPlaceUrl').value;
+
+        console.log(shouldCreateMap);
+        if (shouldCreateMap) {
+        console.log('11Lat:', placeLat, 'Lng:', placeLng, 'shouldCreateMap:', shouldCreateMap);
+          createMap(placeName,placeLat,placeLng,placeUrl);
+        }
+
+      function createMap(placeName,placeLat,placeLng,placeUrl){
+      console.log('22Lat:', placeLat, 'Lng:', placeLng, 'shouldCreateMap:', shouldCreateMap);
+      document.getElementById('map').style.display = 'block';
+           var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+         mapOption = {
+               center: new kakao.maps.LatLng(placeLng, placeLat), // 지도의 중심좌표
+               level: 4 // 지도의 확대 레벨
+           };
+
+       var map = new kakao.maps.Map(mapContainer, mapOption);
+
+       var imageSrc = '../images/map-icon.png', // 마커이미지의 주소입니다
+           imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
+           imageOption = {offset: new kakao.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+
+       // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+       var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
+           markerPosition = new kakao.maps.LatLng(placeLng, placeLat); // 마커가 표시될 위치입니다
+
+       // 마커를 생성합니다
+       var marker = new kakao.maps.Marker({
+         position: markerPosition,
+         image: markerImage // 마커이미지 설정
+       });
+
+       // 마커가 지도 위에 표시되도록 설정합니다
+       marker.setMap(map);
+
+       // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+       var content = '<div class="customoverlay">' +
+           ` <a href="${placeUrl}" target="_blank"> `  +
+           `    <span class="title">${placeName}</span>` +
+           '  </a>' +
+           '</div>';
+
+       // 커스텀 오버레이가 표시될 위치입니다
+       var position = new kakao.maps.LatLng(placeLng, placeLat);
+
+       // 커스텀 오버레이를 생성합니다
+       var customOverlay = new kakao.maps.CustomOverlay({
+           map: map,
+           position: position,
+           content: content,
+           yAnchor: 1
+       });
+      }
+})
+</script>
+
+<script>
+    const startInput = document.getElementById('sdate');
+    const endInput = document.getElementById('edate');
+
+    // 실시간: 시작일이 바뀌면 종료일 최소값 설정
+    startInput.addEventListener('change', function () {
+      if (startInput.value) {
+        endInput.min = startInput.value;
+      }
+    });
+
+    // 실시간: 종료일이 바뀌면 검증
+    endInput.addEventListener('change', function () {
+      if (startInput.value && endInput.value) {
+        if (new Date(startInput.value) > new Date(endInput.value)) {
+          alert("❗ 시작 날짜는 종료 날짜보다 늦을 수 없습니다.");
+          endInput.value = "";
+        }
+      }
+    });
+
+
+</script>
+
+<script>
+    function openModal() {
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('share_id').value = '';
+      document.getElementById('modalOverlay').style.display = 'none';
+
+    }
+
+    function share() {
+      const id = document.getElementById('share_id').value;
+      const calendar_id = document.getElementById('calendar_id').value;
+      fetch('/share', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username : id, calendar_id: calendar_id})
+                })
+                .then(async res => {
+    const msg = await res.text();
+
+    if (!res.ok) {
+      // 4xx, 5xx 상태면 여기서 예외 처리
+      throw new Error(msg);
+    }
+
+    alert(msg);      // "공유완료!"
+    closeModal();
+  })
+  .catch(err => {
+    alert("공유 실패: " + err.message); // "존재하지 않는 아이디입니다." 등
+  });
+}
+</script>
+
+<script>
+    document.getElementById('calendarForm').addEventListener('submit', function (event) {
+      const title = document.getElementById('title').value.trim();
+      const content = document.getElementById('content').value.trim();
+      const startDate = document.getElementById('sdate').value;
+      const endDate = document.getElementById('edate').value;
+
+      if (!title) {
+        alert("제목은 필수입니다.");
+        event.preventDefault();
+        return;
+      }
+
+      if (content.length < 10) {
+        alert("내용은 10자 이상 입력해주세요.");
+        event.preventDefault();
+        return;
+      }
+
+      if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+        alert("시작일은 종료일보다 이전이어야 합니다.");
+        event.preventDefault();
+        return;
+      }
+    });
+</script>
+
+<script>
+
+    function deleteItem(e, button) {
+    e.preventDefault(); // a태그 기본 이동 방지
+    const id = button.getAttribute('data-id');
+      fetch('/deleteCalendar', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id })
+            }).then(r => r.text())
+            .then(()=> {
+            window.location.href = '/calendar';
+            });
+    }
+
+
+
+</script>
+
+
+</body>
+</html>

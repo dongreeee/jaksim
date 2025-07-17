@@ -206,31 +206,53 @@ public class CalendarController {
     }
 
 
-    @GetMapping("/sharedCalendarView/{messageId}")
-    public String viewSharedCalendar(@PathVariable Long messageId,
+    @GetMapping("/shareCalendarView/{calendarId}")
+    public String viewSharedCalendar(@PathVariable Long calendarId,
                                      Authentication auth,
                                      Model model){
 
-        // 메세지 조회
-        Optional<Message> message = messageRepository.findById(messageId);
+        Optional<Calendar> calendar = calendarRepository.findById(calendarId);
+        Optional<com.hazel.jaksim.map.Map> map = Optional.empty();
+        Boolean isMapChk = false;
 
-        // 로그인 유저가 받은 사람인지 확인
-        if(!message.get().getRecieveUser().equals(auth.getName())){
-//            공유받을 사용자와 로그인한 사용자가 일치하지 않으면 ???
-            model.addAttribute("error", "false");
-            return "calendar";
+
+//        private Long CalendarId;
+//        private String titleColor;
+//        private String title;
+//        private String content;
+//        private String sdate;
+//        private String edate;
+//        private String selectedPlaceName;
+//        private String selectedPlaceAddress;
+//        private double selectedPlaceLat;
+//        private double selectedPlaceLng;
+//        private String selectedPlaceUrl;
+
+        CalendarResponse dto = new CalendarResponse();
+        dto.setCalendarId(calendarId);
+        dto.setTitle(calendar.get().getTitle());
+        dto.setTitleColor(calendar.get().getTitle_color());
+        dto.setContent(calendar.get().getContent());
+        dto.setSdate(calendar.get().getSdate());
+        dto.setEdate(calendar.get().getEdate());
+
+        if(calendar.get().getMap() != null){
+            map = mapRepository.findById(calendar.get().getMap().getId());
+            dto.setSelectedPlaceName(map.get().getPlaceName());
+            dto.setSelectedPlaceAddress(map.get().getPlaceAddress());
+            dto.setSelectedPlaceLat(map.get().getPlaceX());
+            dto.setSelectedPlaceLng(map.get().getPlaceY());
+            dto.setSelectedPlaceUrl(map.get().getPlaceUrl());
+            isMapChk = true;
         }
 
-        // 공유받은 캘린더 조회
-        Calendar calendar = message.get().getCalendar();
-        if(calendar == null){
-            return  "calendar";
-        }
+        dto.setIsMapChk(isMapChk);
 
-        model.addAttribute("calendar", message.get().getCalendar());
-        model.addAttribute("shared", true);
+        model.addAttribute("dto", dto);
 
-        return "calendar_edit.html";
+
+
+        return "calendar_share.html";
     }
 
     @GetMapping("/calendar/navInfo")
