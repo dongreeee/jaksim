@@ -75,6 +75,7 @@
 </head>
 <body>
 
+<input type="hidden" name="isMapChk" id="isMapChk" th:value="${dto.isMapChk}">
 <input type="hidden" name="selectedPlaceName" id="selectedPlaceName" th:value="${dto.selectedPlaceName}">
 <input type="hidden" name="selectedPlaceAddress" id="selectedPlaceAddress" th:value="${dto.selectedPlaceAddress}">
 <input type="hidden" name="SelectedPlaceLat" id="selectedPlaceLat" th:value="${dto.SelectedPlaceLat}">
@@ -119,7 +120,7 @@
 
         </div>
 
-        <div id="map" ></div>
+        <div id="map" style="display:none;" ></div>
 
         <button type="submit" class="save-btn" onclick="submitForm()">수정하기</button>
     </form>
@@ -145,55 +146,68 @@
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=	db0946b54e87a1652fbd99ff96a402de"></script>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+<!--    boolean으로 변환 -->
+        const shouldCreateMap = document.getElementById('isMapChk').value === "true";
+        const placeName =  document.getElementById('selectedPlaceName').value;
+        const placeAddress =  document.getElementById('selectedPlaceAddress').value;
+        const placeLat =  document.getElementById('selectedPlaceLat').value;
+        const placeLng =  document.getElementById('selectedPlaceLng').value;
+        const placeUrl =  document.getElementById('selectedPlaceUrl').value;
 
-  const placeName =  document.getElementById('selectedPlaceName').value;
-  const placeAddress =  document.getElementById('selectedPlaceAddress').value;
-  const placeLat =  document.getElementById('selectedPlaceLat').value;
-  const placeLng =  document.getElementById('selectedPlaceLng').value;
-  const placeUrl =  document.getElementById('selectedPlaceUrl').value;
+        console.log(shouldCreateMap);
+        if (shouldCreateMap) {
+        console.log('11Lat:', placeLat, 'Lng:', placeLng, 'shouldCreateMap:', shouldCreateMap);
+          createMap(placeName,placeLat,placeLng,placeUrl);
+        }
 
-    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
-   mapOption = {
-         center: new kakao.maps.LatLng(placeLng, placeLat), // 지도의 중심좌표
-         level: 4 // 지도의 확대 레벨
-     };
+      function createMap(placeName,placeLat,placeLng,placeUrl){
+      console.log('22Lat:', placeLat, 'Lng:', placeLng, 'shouldCreateMap:', shouldCreateMap);
+      document.getElementById('map').style.display = 'block';
+           var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+         mapOption = {
+               center: new kakao.maps.LatLng(placeLng, placeLat), // 지도의 중심좌표
+               level: 4 // 지도의 확대 레벨
+           };
 
- var map = new kakao.maps.Map(mapContainer, mapOption);
+       var map = new kakao.maps.Map(mapContainer, mapOption);
 
- var imageSrc = '../images/map-icon.png', // 마커이미지의 주소입니다
-     imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
-     imageOption = {offset: new kakao.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+       var imageSrc = '../images/map-icon.png', // 마커이미지의 주소입니다
+           imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
+           imageOption = {offset: new kakao.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
 
- // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
- var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
-     markerPosition = new kakao.maps.LatLng(placeLng, placeLat); // 마커가 표시될 위치입니다
+       // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+       var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
+           markerPosition = new kakao.maps.LatLng(placeLng, placeLat); // 마커가 표시될 위치입니다
 
- // 마커를 생성합니다
- var marker = new kakao.maps.Marker({
-   position: markerPosition,
-   image: markerImage // 마커이미지 설정
- });
+       // 마커를 생성합니다
+       var marker = new kakao.maps.Marker({
+         position: markerPosition,
+         image: markerImage // 마커이미지 설정
+       });
 
- // 마커가 지도 위에 표시되도록 설정합니다
- marker.setMap(map);
+       // 마커가 지도 위에 표시되도록 설정합니다
+       marker.setMap(map);
 
- // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
- var content = '<div class="customoverlay">' +
-     ` <a href="${placeUrl}" target="_blank"> `  +
-     `    <span class="title">${placeName}</span>` +
-     '  </a>' +
-     '</div>';
+       // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+       var content = '<div class="customoverlay">' +
+           ` <a href="${placeUrl}" target="_blank"> `  +
+           `    <span class="title">${placeName}</span>` +
+           '  </a>' +
+           '</div>';
 
- // 커스텀 오버레이가 표시될 위치입니다
- var position = new kakao.maps.LatLng(placeLng, placeLat);
+       // 커스텀 오버레이가 표시될 위치입니다
+       var position = new kakao.maps.LatLng(placeLng, placeLat);
 
- // 커스텀 오버레이를 생성합니다
- var customOverlay = new kakao.maps.CustomOverlay({
-     map: map,
-     position: position,
-     content: content,
-     yAnchor: 1
- });
+       // 커스텀 오버레이를 생성합니다
+       var customOverlay = new kakao.maps.CustomOverlay({
+           map: map,
+           position: position,
+           content: content,
+           yAnchor: 1
+       });
+      }
+})
 </script>
 
 <script>
@@ -301,6 +315,8 @@
             window.location.href = '/calendar';
             });
     }
+
+
 
 </script>
 

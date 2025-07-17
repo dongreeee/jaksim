@@ -55,7 +55,9 @@ public class CalendarController {
     @GetMapping("/editCalendarView/{id}")
     public String editCalendar(@PathVariable Long id, Model model ){
         Optional<Calendar> calendar = calendarRepository.findById(id);
-        Optional<com.hazel.jaksim.map.Map> map = mapRepository.findById(calendar.get().getMap().getId());
+        Optional<com.hazel.jaksim.map.Map> map = Optional.empty();
+        Boolean isMapChk = false;
+
 
 //        private Long CalendarId;
 //        private String titleColor;
@@ -76,14 +78,22 @@ public class CalendarController {
         dto.setContent(calendar.get().getContent());
         dto.setSdate(calendar.get().getSdate());
         dto.setEdate(calendar.get().getEdate());
-        dto.setSelectedPlaceName(map.get().getPlaceName());
-        dto.setSelectedPlaceAddress(map.get().getPlaceAddress());
-        dto.setSelectedPlaceLat(map.get().getPlaceX());
-        dto.setSelectedPlaceLng(map.get().getPlaceY());
-        dto.setSelectedPlaceUrl(map.get().getPlaceUrl());
 
+        if(calendar.get().getMap() != null){
+            map = mapRepository.findById(calendar.get().getMap().getId());
+            dto.setSelectedPlaceName(map.get().getPlaceName());
+            dto.setSelectedPlaceAddress(map.get().getPlaceAddress());
+            dto.setSelectedPlaceLat(map.get().getPlaceX());
+            dto.setSelectedPlaceLng(map.get().getPlaceY());
+            dto.setSelectedPlaceUrl(map.get().getPlaceUrl());
+            isMapChk = true;
+        }
+
+        dto.setIsMapChk(isMapChk);
 
         model.addAttribute("dto", dto);
+
+        System.out.println(dto.toString());
         return "calendar_edit.html";
     }
 

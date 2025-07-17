@@ -16,19 +16,21 @@ public class CalendarResponse {
     private String content;
     private String sdate;
     private String edate;
+    private Boolean isMapChk;
     private String selectedPlaceName;
     private String selectedPlaceAddress;
     private double selectedPlaceLat;
     private double selectedPlaceLng;
     private String selectedPlaceUrl;
 
-    public CalendarResponse(Long calendarId, String titleColor, String title, String content, String sdate, String edate, String selectedPlaceName, String selectedPlaceAddress, double selectedPlaceLat, double selectedPlaceLng, String selectedPlaceUrl) {
+    public CalendarResponse(Long calendarId, String titleColor, String title, String content, String sdate, String edate,Boolean isMapChk, String selectedPlaceName, String selectedPlaceAddress, double selectedPlaceLat, double selectedPlaceLng, String selectedPlaceUrl) {
         CalendarId = calendarId;
         this.titleColor = titleColor;
         this.title = title;
         this.content = content;
         this.sdate = sdate;
         this.edate = edate;
+        this.isMapChk = isMapChk;
         this.selectedPlaceName = selectedPlaceName;
         this.selectedPlaceAddress = selectedPlaceAddress;
         this.selectedPlaceLat = selectedPlaceLat;
