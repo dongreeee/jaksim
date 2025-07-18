@@ -75,7 +75,7 @@
 </head>
 <body>
 
-<input type="hidden" name="isMapChk" id="isMapChk" th:value="${dto.isMapChk}">
+
 <input type="hidden" name="selectedPlaceName" id="selectedPlaceName" th:value="${dto.selectedPlaceName}">
 <input type="hidden" name="selectedPlaceAddress" id="selectedPlaceAddress" th:value="${dto.selectedPlaceAddress}">
 <input type="hidden" name="SelectedPlaceLat" id="selectedPlaceLat" th:value="${dto.SelectedPlaceLat}">
@@ -84,22 +84,21 @@
 
 <div th:replace="~{nav.html::navbar}"></div>
 <div class="container" style="margin-top:30px; padding:20px;">
-    <form id="calendarForm" action="/editCalender" method="post">
+    <form id="calendarForm" action="/addCalender" method="post">
         <div class="label-row">
             <input type="hidden" name="id" id="calendar_id" th:value="${dto.calendarId}">
             <label for="title">제목</label>
-            <div style="width:70%;">
-                <input type="color" name="title_color" id="color" th:value="${dto.titleColor}">
+            <div>
+                <input type="color" name="titleColor" id="color" th:value="${dto.titleColor}">
             </div>
-                <img src="/images/share-icon.png" class="share-icon"  onclick="openModal()">
         </div>
-        <input type="text" id="title" name="title" placeholder="제목을 입력하세요" th:value="${dto.title}">
+        <input type="text" id="title" name="title" placeholder="제목을 입력하세요" th:value="${dto.title}" readonly>
 
         <div class="label-row">
             <label for="content">내용</label>
         </div>
 
-        <textarea id="content" name="content" placeholder="내용을 입력하세요" th:text="${dto.content}"></textarea>
+        <textarea id="content" name="content" placeholder="내용을 입력하세요" th:text="${dto.content}" readonly></textarea>
         <div style="display: flex;">
             <div style="width:100%">
                 <div class="label-row">
@@ -119,21 +118,13 @@
             </div>
 
         </div>
-
+        <input type="hidden" name="mapChk" id="mapChk" th:value="${dto.mapChk}">
+        <input type="hidden" name="mapId" id="mapId" th:value="${dto.mapId}">
         <div id="map" style="display:none;" ></div>
 
-        <button type="submit" class="save-btn" onclick="submitForm()">수정하기</button>
+        <button type="submit" class="save-btn" onclick="submitForm()">나의 캘린더에 저장</button>
     </form>
-    <a class="delete-btn"  href="#" th:attr="data-id=${dto.calendarId}" onclick="deleteItem(event, this);">삭제하기</a>
 
-</div>
-
-<div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-        <span class="close-btn" onclick="closeModal()">×</span>
-        <input type="text" name="share_id" id="share_id" placeholder="아이디를 입력하세요" />
-        <button onclick="share()">공유하기</button>
-    </div>
 </div>
 
 <!-- STOMP & SockJS CDN -->
@@ -148,7 +139,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 <!--    boolean으로 변환 -->
-        const shouldCreateMap = document.getElementById('isMapChk').value === "true";
+        const shouldCreateMap = document.getElementById('mapChk').value === "true";
         const placeName =  document.getElementById('selectedPlaceName').value;
         const placeAddress =  document.getElementById('selectedPlaceAddress').value;
         const placeLat =  document.getElementById('selectedPlaceLat').value;
@@ -234,43 +225,6 @@
 
 </script>
 
-<script>
-    function openModal() {
-      document.getElementById('modalOverlay').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('share_id').value = '';
-      document.getElementById('modalOverlay').style.display = 'none';
-
-    }
-
-    function share() {
-      const id = document.getElementById('share_id').value;
-      const calendar_id = document.getElementById('calendar_id').value;
-      fetch('/share', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username : id, calendar_id: calendar_id})
-                })
-                .then(async res => {
-    const msg = await res.text();
-
-    if (!res.ok) {
-      // 4xx, 5xx 상태면 여기서 예외 처리
-      throw new Error(msg);
-    }
-
-    alert(msg);      // "공유완료!"
-    closeModal();
-  })
-  .catch(err => {
-    alert("공유 실패: " + err.message); // "존재하지 않는 아이디입니다." 등
-  });
-}
-</script>
 
 <script>
     document.getElementById('calendarForm').addEventListener('submit', function (event) {
@@ -299,26 +253,6 @@
     });
 </script>
 
-<script>
-
-    function deleteItem(e, button) {
-    e.preventDefault(); // a태그 기본 이동 방지
-    const id = button.getAttribute('data-id');
-      fetch('/deleteCalendar', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: id })
-            }).then(r => r.text())
-            .then(()=> {
-            window.location.href = '/calendar';
-            });
-    }
-
-
-
-</script>
 
 
 </body>

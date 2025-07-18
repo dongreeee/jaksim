@@ -75,7 +75,7 @@
 </head>
 <body>
 
-<input type="hidden" name="isMapChk" id="isMapChk" th:value="${dto.isMapChk}">
+<input type="hidden" name="mapChk" id="mapChk" th:value="${dto.mapChk}">
 <input type="hidden" name="selectedPlaceName" id="selectedPlaceName" th:value="${dto.selectedPlaceName}">
 <input type="hidden" name="selectedPlaceAddress" id="selectedPlaceAddress" th:value="${dto.selectedPlaceAddress}">
 <input type="hidden" name="SelectedPlaceLat" id="selectedPlaceLat" th:value="${dto.SelectedPlaceLat}">
@@ -148,7 +148,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 <!--    boolean으로 변환 -->
-        const shouldCreateMap = document.getElementById('isMapChk').value === "true";
+        const shouldCreateMap = document.getElementById('mapChk').value === "true";
         const placeName =  document.getElementById('selectedPlaceName').value;
         const placeAddress =  document.getElementById('selectedPlaceAddress').value;
         const placeLat =  document.getElementById('selectedPlaceLat').value;

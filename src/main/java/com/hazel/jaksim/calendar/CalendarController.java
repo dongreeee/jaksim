@@ -89,7 +89,7 @@ public class CalendarController {
             isMapChk = true;
         }
 
-        dto.setIsMapChk(isMapChk);
+        dto.setMapChk(isMapChk);
 
         model.addAttribute("dto", dto);
 
@@ -103,7 +103,7 @@ public class CalendarController {
         Long map_id;
         Optional<com.hazel.jaksim.map.Map>map = Optional.empty();
         try{
-//            System.out.println(formDto.toString());
+            System.out.println(formDto.toString());
              if(formDto.isMapChk()){
                  map = mapService.addMap(formDto);
              }
@@ -238,6 +238,7 @@ public class CalendarController {
 
         if(calendar.get().getMap() != null){
             map = mapRepository.findById(calendar.get().getMap().getId());
+            dto.setMapId(map.get().getId());
             dto.setSelectedPlaceName(map.get().getPlaceName());
             dto.setSelectedPlaceAddress(map.get().getPlaceAddress());
             dto.setSelectedPlaceLat(map.get().getPlaceX());
@@ -246,7 +247,7 @@ public class CalendarController {
             isMapChk = true;
         }
 
-        dto.setIsMapChk(isMapChk);
+        dto.setMapChk(isMapChk);
 
         model.addAttribute("dto", dto);
 

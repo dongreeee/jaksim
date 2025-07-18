@@ -18,15 +18,21 @@ public class MapService {
 
         Long map_id;
 
-        Map map = new Map();
-        map.setPlaceAddress(formDto.getSelectedPlaceAddress());
-        map.setPlaceName(formDto.getSelectedPlaceName());
-        map.setPlaceUrl(formDto.getSelectedPlaceUrl());
-        map.setPlaceX(formDto.getSelectedPlaceLng());
-        map.setPlaceY(formDto.getSelectedPlaceLat());
-        mapRepository.save(map);
+        if(formDto.getMapId() != null){
+            map_id = formDto.getMapId();
+        }else{
+            Map map = new Map();
+            map.setPlaceAddress(formDto.getSelectedPlaceAddress());
+            map.setPlaceName(formDto.getSelectedPlaceName());
+            map.setPlaceUrl(formDto.getSelectedPlaceUrl());
+            map.setPlaceX(formDto.getSelectedPlaceLng());
+            map.setPlaceY(formDto.getSelectedPlaceLat());
+            mapRepository.save(map);
 
-        map_id = map.getId();
+            map_id = map.getId();
+        }
+
+
 
         Optional<Map> newMap = mapRepository.findById(map_id);
 

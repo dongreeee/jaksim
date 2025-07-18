@@ -18,13 +18,14 @@ public class CalendarFormDto {
     private String edate;
     private String mapKeyword;
     private boolean mapChk;
+    private Long mapId;
     private String selectedPlaceName;
     private String selectedPlaceAddress;
     private double selectedPlaceLat;
     private double selectedPlaceLng;
     private String selectedPlaceUrl;
 
-    public CalendarFormDto(String titleColor, String title, String content, String sdate, String edate, String mapKeyword, boolean mapChk, String selectedPlaceName, String selectedPlaceAddress, double selectedPlaceLat, double selectedPlaceLng, String selectedPlaceUrl) {
+    public CalendarFormDto(String titleColor, String title, String content, String sdate, String edate, String mapKeyword, boolean mapChk, Long mapId, String selectedPlaceName, String selectedPlaceAddress, double selectedPlaceLat, double selectedPlaceLng, String selectedPlaceUrl) {
         this.titleColor = titleColor;
         this.title = title;
         this.content = content;
@@ -32,6 +33,7 @@ public class CalendarFormDto {
         this.edate = edate;
         this.mapKeyword = mapKeyword;
         this.mapChk = mapChk;
+        this.mapId = mapId;
         this.selectedPlaceName = selectedPlaceName;
         this.selectedPlaceAddress = selectedPlaceAddress;
         this.selectedPlaceLat = selectedPlaceLat;
