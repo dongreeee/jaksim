@@ -189,7 +189,7 @@ function onNotificationClick(messageId, calendarId) {
     body: JSON.stringify({ messageId })
   }).then(() => {
     // 2. 해당 calendar 상세 페이지로 이동
-    window.location.href = `/shareCalendarView/${calendarId}`;
+    window.location.href = `/shareCalendarView/${messageId}/${calendarId}`;
   });
 }
 

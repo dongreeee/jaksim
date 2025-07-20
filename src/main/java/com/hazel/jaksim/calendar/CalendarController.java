@@ -1,13 +1,15 @@
 package com.hazel.jaksim.calendar;
 
-import com.hazel.jaksim.calendar.dto.CalendarFormDto;
+import com.hazel.jaksim.calendar.dto.CalendarAddDto;
 import com.hazel.jaksim.calendar.dto.CalendarResponse;
+import com.hazel.jaksim.calendar.dto.SharedCalendarAddDto;
 import com.hazel.jaksim.map.MapRepository;
 import com.hazel.jaksim.map.MapService;
 import com.hazel.jaksim.member.Member;
 import com.hazel.jaksim.member.MemberRepository;
 import com.hazel.jaksim.websoket.Message;
 import com.hazel.jaksim.websoket.MessageRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -98,7 +101,7 @@ public class CalendarController {
     }
 
     @PostMapping("/addCalender")
-    public String addCalender(@ModelAttribute CalendarFormDto formDto,
+    public String addCalender(@ModelAttribute CalendarAddDto formDto,
                               Authentication auth){
         Long map_id;
         Optional<com.hazel.jaksim.map.Map>map = Optional.empty();
@@ -206,15 +209,16 @@ public class CalendarController {
     }
 
 
-    @GetMapping("/shareCalendarView/{calendarId}")
-    public String viewSharedCalendar(@PathVariable Long calendarId,
+    @GetMapping("/shareCalendarView/{messageId}/{calendarId}")
+    public String viewSharedCalendar(@PathVariable Long messageId,
+                                     @PathVariable Long calendarId,
                                      Authentication auth,
                                      Model model){
-
+        Optional<Message> message = messageRepository.findById(messageId);
         Optional<Calendar> calendar = calendarRepository.findById(calendarId);
         Optional<com.hazel.jaksim.map.Map> map = Optional.empty();
         Boolean isMapChk = false;
-
+        Boolean isSharedChk = false;
 
 //        private Long CalendarId;
 //        private String titleColor;
@@ -248,12 +252,63 @@ public class CalendarController {
         }
 
         dto.setMapChk(isMapChk);
+        if(message.isPresent()){
+            String isShared = message.get().getIsShared();
+//            == 은 주소값 비교
+            if ("1".equals(isShared)) {
+                isSharedChk= true;
+            }
+            model.addAttribute("msgId", messageId);
+            model.addAttribute("sharedChk", isSharedChk);
+        }
 
         model.addAttribute("dto", dto);
 
 
 
         return "calendar_share.html";
+    }
+
+    @PostMapping("/sharedCalenderAdd")
+    public String sharedCalenderAdd(@ModelAttribute SharedCalendarAddDto formDto,
+                              Authentication auth){
+        Long mapId = formDto.getMapId();
+        System.out.println(formDto.toString());
+        com.hazel.jaksim.map.Map map = null;
+
+        if (formDto.getMapId() != null) {
+            map = mapRepository.findById(formDto.getMapId()).orElse(null);
+        }
+
+        try{
+
+
+            Calendar calendar = new Calendar();
+            calendar.setTitle(formDto.getTitle());
+            calendar.setTitle_color(formDto.getTitleColor());
+            calendar.setContent(formDto.getContent());
+            calendar.setSdate(formDto.getSdate());
+            calendar.setEdate(formDto.getEdate());
+            calendar.setUsername(auth.getName());
+            calendar.setMap(map);
+
+            System.out.println(formDto.getMessageId());
+            calendarRepository.save(calendar);
+            Optional<Message> optionalMessage = messageRepository.findById(formDto.getMessageId());
+            if(optionalMessage.isPresent()){
+                System.out.println("message Update");
+                Message message = optionalMessage.get();
+                message.setIsShared("1");
+                message.setIsSharedReg(LocalDateTime.now());
+                messageRepository.save(message);
+            }
+            return "redirect:/calendar";
+        }
+        catch (Exception e){
+
+            return "calendar";
+
+        }
     }
 
     @GetMapping("/calendar/navInfo")

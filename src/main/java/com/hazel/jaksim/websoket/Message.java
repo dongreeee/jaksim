@@ -34,6 +34,12 @@ public class Message {
     @Column(name = "vc", length = 10)
     private String vc = "0";
 
+    @Column(name="is_shared")
+    private String isShared;
+
+    @Column(name="is_shared_reg")
+    private LocalDateTime isSharedReg;
+
     @ManyToOne
     @JoinColumn(name = "calendar_id", foreignKey = @ForeignKey(name = "fk_calendar"))
     private Calendar calendar;

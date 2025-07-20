@@ -84,8 +84,9 @@
 
 <div th:replace="~{nav.html::navbar}"></div>
 <div class="container" style="margin-top:30px; padding:20px;">
-    <form id="calendarForm" action="/addCalender" method="post">
+    <form id="calendarForm" action="/sharedCalenderAdd" method="post">
         <div class="label-row">
+            <input type="hidden" name="messageId" id="messageId" th:value="${msgId}">
             <input type="hidden" name="id" id="calendar_id" th:value="${dto.calendarId}">
             <label for="title">제목</label>
             <div>
@@ -122,7 +123,8 @@
         <input type="hidden" name="mapId" id="mapId" th:value="${dto.mapId}">
         <div id="map" style="display:none;" ></div>
 
-        <button type="submit" class="save-btn" onclick="submitForm()">나의 캘린더에 저장</button>
+        <button th:unless="${sharedChk}" type="submit" class="save-btn" onclick="submitForm()">나의 캘린더에 저장</button>
+        <p th:if="${sharedChk}">이미 등록된 캘린더입니다.</p>
     </form>
 
 </div>
