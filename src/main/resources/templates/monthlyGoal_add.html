@@ -71,12 +71,11 @@
         <!--      disabled는 값을 전달하지 않음   -->
         <input type="hidden" name="month" id="goal_month" th:value="${month}">
         <input type="hidden" name="goal_id" id="goal_id" >
+        <div id="div_goal_add" style="display:none;">
+            <input type="text" id="content" name="content" placeholder="오늘의 목표를 달성했나요? ">
+            <button class="save-btn" type="submit" onclick="submitForm()">달 성 완 료</button>
+        </div>
 
-        <input type="text" id="content" name="content" placeholder="오늘의 목표를 달성했나요? ">
-
-
-
-        <button class="save-btn" type="submit" onclick="submitForm()">달 성 완 료</button>
     </form>
 
     <div class="modal-overlay" id="modalOverlay">
@@ -270,26 +269,23 @@ function changeMonth(offset) {
 fetch(`/monthlyGoal/info/${ym}`)
   .then(res => {
     if (res.status === 204) {
-    console.log('1');
       throw new Error("이번 달 목표 없음");
     }
     if (!res.ok) {
-   console.log('2');
       throw new Error("서버 오류");
     }
     return res.json();
   })
   .then(data => {
-  console.log('3');
     const title = data.title;
     const goal_id = data.id;
-    console.log(title);
     const el3 = document.getElementById('goal_id');
 
     document.getElementById('goal_update').textContent = `🌟 이번달 목표: ${title}`;
     document.getElementById('goal_update').style.display = 'inline';
     document.getElementById('goal_add').style.display = 'none';
     if(el3){
+         document.getElementById('div_goal_add').style.display = 'block';
          document.getElementById('goal_id').value = `${goal_id}`;
     }
 

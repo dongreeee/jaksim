@@ -124,7 +124,7 @@
         <div id="map" style="display:none;" ></div>
 
         <button th:unless="${sharedChk}" type="submit" class="save-btn" onclick="submitForm()">나의 캘린더에 저장</button>
-        <p th:if="${sharedChk}">이미 등록된 캘린더입니다.</p>
+        <p th:if="${sharedChk}" style="color:red; text-align: center; margin-top:10px;">이미 등록된 캘린더입니다.</p>
     </form>
 
 </div>
