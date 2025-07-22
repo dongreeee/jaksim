@@ -212,7 +212,7 @@
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
 <div class="container" style="margin-top:30px; padding:20px;">
-    <form id="calendarForm" action="/addCalender" method="post">
+    <form id="calendarForm" action="/addCalendar" method="post">
         <div class="label-row">
             <label for="title">제목</label>
             <input type="color" name="titleColor" id="titleColor" value="#3498db">
@@ -246,7 +246,7 @@
         <div class="map-search-input-group"> <input type="text" id="map_keyword" name="map_keyword" placeholder="장소 입력">
             <button type="button" class="map-search-btn" onclick="openPlaceSearchModal()">검색</button> </div>
 
-        <input type="hidden" id="mapChk" name="mapChk">
+        <input type="hidden" id="mapChk" name="mapChk" >
         <input type="hidden" id="selectedPlaceName" name="selectedPlaceName">
         <input type="hidden" id="selectedPlaceAddress" name="selectedPlaceAddress">
         <input type="hidden" id="selectedPlaceLat" name="selectedPlaceLat">

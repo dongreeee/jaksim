@@ -100,13 +100,15 @@ public class CalendarController {
         return "calendar_edit.html";
     }
 
-    @PostMapping("/addCalender")
+    @PostMapping("/addCalendar")
     public String addCalender(@ModelAttribute CalendarAddDto formDto,
                               Authentication auth){
+        System.out.println("addCalender 진입 확인");
         Long map_id;
         Optional<com.hazel.jaksim.map.Map>map = Optional.empty();
         try{
-            System.out.println(formDto.toString());
+            System.out.println("야야야야야야");
+            System.out.println(formDto.isMapChk());
              if(formDto.isMapChk()){
                  map = mapService.addMap(formDto);
              }
