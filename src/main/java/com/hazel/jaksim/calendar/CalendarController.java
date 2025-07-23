@@ -107,11 +107,15 @@ public class CalendarController {
         Long map_id;
         Optional<com.hazel.jaksim.map.Map>map = Optional.empty();
         try{
-            System.out.println("야야야야야야");
-            System.out.println(formDto.isMapChk());
-             if(formDto.isMapChk()){
-                 map = mapService.addMap(formDto);
-             }
+            System.out.println(formDto.getMapChk());
+            if (Boolean.TRUE.equals(formDto.getMapChk())) {
+                // 위도/경도 필드가 모두 존재할 때만 지도 저장 시도
+                if (formDto.getSelectedPlaceLat() != null && formDto.getSelectedPlaceLng() != null) {
+                    map = mapService.addMap(formDto);
+                }
+            }
+
+            System.out.println(map.isPresent());
 
             Calendar calendar = new Calendar();
             calendar.setTitle(formDto.getTitle());
@@ -121,9 +125,8 @@ public class CalendarController {
             calendar.setEdate(formDto.getEdate());
             calendar.setUsername(auth.getName());
 
-            if(map.isPresent()){
-                calendar.setMap(map.get());
-            }
+            // map이 존재하면 저장
+            map.ifPresent(calendar::setMap);
 
             calendarRepository.save(calendar);
             return "redirect:/calendar";
