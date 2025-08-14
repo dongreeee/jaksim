@@ -1,4 +1,4 @@
-package com.hazel.jaksim.websoket;
+package com.hazel.jaksim.websoket.dto;
 
 import lombok.Getter;
 import lombok.Setter;

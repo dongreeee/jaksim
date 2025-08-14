@@ -1,5 +1,11 @@
 package com.hazel.jaksim.websoket;
 
+import com.hazel.jaksim.calendar.Calendar;
+import com.hazel.jaksim.calendar.CalendarRepository;
+import com.hazel.jaksim.member.Member;
+import com.hazel.jaksim.member.MemberRepository;
+import com.hazel.jaksim.websoket.dto.MessageDto;
+import com.hazel.jaksim.websoket.dto.ShareMsgDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,17 +15,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
 public class MessageController {
 
     private final MessageRepository messageRepository;
+
+    private MessageService messageService;
+
+    @PostMapping("/share")
+    public ResponseEntity<String> share(@RequestBody ShareMsgDto dto, Authentication auth) {
+        return messageService.shareCalendar(dto, auth.getName());
+    }
+
+
 
 
     @GetMapping("/notications/messages")
