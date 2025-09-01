@@ -2,6 +2,7 @@ package com.hazel.jaksim.member;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +52,11 @@ public class MemberController {
     }
 
     @GetMapping("/pwchk")
-    public String pwchk(){
+    public String pwchk(Authentication auth){
+//      instanceof : 이 객체가 특정 클래스 타입인지 확인 / OAuth2 로그인 사용자인지 판별하는 용도
+        if(auth instanceof OAuth2AuthenticationToken){
+            return "mypage.html";
+        }
         return "pw_chk_mypage.html";
     }
 
