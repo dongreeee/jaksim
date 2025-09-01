@@ -56,7 +56,7 @@
     <!-- 오른쪽 상단 바 start -->
     <div class="notification-wrapper">
 
-        <input type="hidden" id="loginUsername" sec:authentication="principal.username">
+        <input type="hidden" id="loginUsername" th:value="${#authentication.name}">
 
         <!-- 알림 아이콘 + 숫자 -->
         <div class="image-container">

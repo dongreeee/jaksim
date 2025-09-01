@@ -1,7 +1,5 @@
 package com.hazel.jaksim.map;
 
-import com.hazel.jaksim.calendar.Calendar;
-import com.hazel.jaksim.member.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

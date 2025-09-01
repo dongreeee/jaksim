@@ -1,6 +1,7 @@
 package com.hazel.jaksim.todo;
 
 import com.hazel.jaksim.calendar.Calendar;
+import com.hazel.jaksim.todo.dto.TodoCheckRequest;
 import com.hazel.jaksim.websoket.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,17 +34,7 @@ public class TodoController {
                           String date,
                           Authentication auth){
         try{
-            System.out.println(content);
-            System.out.println(date);
-
-            Todo todo = new Todo();
-            todo.setContent(content);
-            todo.setUsername(auth.getName());
-            todo.setCategory("work");
-            todo.setDateymd(date);
-            todo.setIsCompleted("0");
-            System.out.println(todo);
-            todoRepository.save(todo);
+            todoService.addTodo(content,date,auth.getName());
             return "redirect:/calendar?menu=active";
         }
         catch (Exception e){
@@ -56,8 +47,7 @@ public class TodoController {
     @GetMapping("/todo/info/{date}")
     @ResponseBody
     public List<Todo> getTodosByDate(@PathVariable String date, Authentication auth) {
-        String username = auth.getName();
-        return todoService.getTodosByDate(username, date);
+        return todoService.getTodosByDate(auth.getName(), date);
     }
 
     @DeleteMapping("/todo/delete")
@@ -68,28 +58,10 @@ public class TodoController {
     }
 
     @PostMapping("/todo/check")
-    ResponseEntity<String> todoCheck(@RequestBody Map<String, String> payload,
+    ResponseEntity<String> todoCheck(@RequestBody TodoCheckRequest request,
                                      Authentication auth){
-        Long todoId = Long.valueOf(payload.get("id"));
-        boolean checked = Boolean.parseBoolean(payload.get("checked"));
-        String isChk = "0";
 
-        System.out.println(todoId);
-        System.out.println(checked);
-
-        if(checked){
-            isChk = "1";
-        }
-
-        Todo todo = todoRepository.findById(todoId).orElseThrow();
-
-        if (!todo.getUsername().equals(auth.getName())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        todo.setIsCompleted(isChk);
-        todo.setRegdateUpdate(LocalDateTime.now());
-        todoRepository.save(todo);
+        todoService.updateTodoCheck(auth.getName(), request);
         return ResponseEntity.ok().build();
 //       http 응답코드 200 (OK)보내고 본문 body는 비워서 응답하는 코드
 //       ResponseEntity : HTTP 응답 전체를 표현하는 Spring 클래스*상태코드, 헤더, 바디 포함)

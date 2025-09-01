@@ -1,5 +1,6 @@
 package com.hazel.jaksim;
 
+import com.hazel.jaksim.member.CustomOAuth2UserService;
 import com.hazel.jaksim.member.MyUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 public class SecurityConfig {
 
     private final MyUserDetailsService myUserDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     PasswordEncoder EncoderDi(){
@@ -78,7 +80,9 @@ public class SecurityConfig {
                         "/join",
                         "/joinMember",
                         "/send",
-                        "/verify"
+                        "/verify",
+                        "/images/**",
+                        "/oauth2/**"
                 ).permitAll()
                 .anyRequest().authenticated()
         );
@@ -92,6 +96,16 @@ public class SecurityConfig {
                 -> formLogin.loginPage("/login")
                 .defaultSuccessUrl("/calendar", true) // ← true 주의
         );
+
+        // 소셜 로그인
+        http.oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService) // OAuth2UserService 등록
+                )
+                .defaultSuccessUrl("/calendar", true) // 로그인 성공 후 이동
+        );
+
 
 //        로그아웃
         http.logout( logout -> logout.logoutUrl("/logout") );

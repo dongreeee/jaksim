@@ -23,6 +23,11 @@ public class Member {
     @Column(name="displayName")
     private String displayname;
 
+    private String provider;
+
+    @Column(name="provider_id")
+    private String providerId;
+
 }
 
 

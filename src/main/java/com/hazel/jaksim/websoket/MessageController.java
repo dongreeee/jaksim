@@ -1,9 +1,5 @@
 package com.hazel.jaksim.websoket;
 
-import com.hazel.jaksim.calendar.Calendar;
-import com.hazel.jaksim.calendar.CalendarRepository;
-import com.hazel.jaksim.member.Member;
-import com.hazel.jaksim.member.MemberRepository;
 import com.hazel.jaksim.websoket.dto.MessageDto;
 import com.hazel.jaksim.websoket.dto.ShareMsgDto;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
