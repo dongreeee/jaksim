@@ -38,6 +38,29 @@ public class MemberController {
         }
     }
 
+    @PostMapping("/userUpdate")
+    public String updateMember(String socialLogin,
+                               String username,
+                               String password,
+                               String rePassword,
+                               String displayName,
+                               Model model){
+        try{
+            boolean isSocialLogin = Boolean.parseBoolean(socialLogin);
+            memberService.updateMember(isSocialLogin, username, password, rePassword, displayName);
+            return "redirect:/calendar";
+        }
+        catch (Exception e){
+            String msg = switch (e.getMessage()){
+                case "존재하는아이디" -> "이미 존재하는 아이디입니다.";
+                case "너무짧음" -> "아이디와 비밀번호는 8자 이상이어야 합니다.";
+                default -> "회원가입 중 오류가 발생했습니다.";
+            };
+            model.addAttribute("errorMsg", msg);
+            return "join";
+        }
+    }
+
     @GetMapping("/login")
     public String login(){ return "login.html"; }
 
