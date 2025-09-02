@@ -48,6 +48,7 @@ public class MemberController {
     @GetMapping("/mypage")
     public String mypage(Authentication auth){
         CustomUser result = (CustomUser) auth.getPrincipal();
+        System.out.println(result);
         return "mypage.html";
     }
 
@@ -55,7 +56,8 @@ public class MemberController {
     public String pwchk(Authentication auth){
 //      instanceof : 이 객체가 특정 클래스 타입인지 확인 / OAuth2 로그인 사용자인지 판별하는 용도
         if(auth instanceof OAuth2AuthenticationToken){
-            return "mypage.html";
+//          동일한 로직을 그대로 활용해야 함
+            return "redirect:/mypage";
         }
         return "pw_chk_mypage.html";
     }

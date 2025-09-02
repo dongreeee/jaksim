@@ -17,6 +17,7 @@
     <div class="login_wrap">
         <div class="form_wrap">
             <form action="/userUpdate" method="post">
+                <input type="hidden" th:value="${#authentication.principal.socialLogin}">
                 <div class="input_box">
                     <div class="tit">이메일</div>
                     <div class="input">
@@ -29,7 +30,7 @@
                         <input type="text" name="displayname" th:value="${#authentication.principal.displayName}" readonly>
                     </div>
                 </div>
-                <div class="input_box">
+                <div class="input_box" th:if="${!#authentication.principal.socialLogin}">
                     <div class="tit">비밀번호</div>
                     <div class="input">
                         <input type="password" name="password" placeholder="비밀번호를 입력해 주세요.">

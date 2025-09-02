@@ -79,11 +79,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             member = memberRepository.save(newMember);
         }
 
-        // Spring Security용 UserDetails 반환
-        return new DefaultOAuth2User(
+        // CustomUser로 반환
+        CustomUser customUser = new CustomUser(
+                member.getUsername(),
+                "", // OAuth2는 비밀번호 없음
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                oAuth2User.getAttributes(),
-                "sub" // key 이름은 중요치 않음, attribute map에서 대표키 하나 지정
+                oAuth2User.getAttributes() // attributes 반드시 넣기
         );
+        customUser.displayName = member.getDisplayname();
+        customUser.id = member.getId();
+
+// 반환 타입은 OAuth2User지만, CustomUser도 사용 가능
+        return customUser;
     }
 }
