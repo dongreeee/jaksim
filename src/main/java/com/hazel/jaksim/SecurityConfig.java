@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -94,6 +95,13 @@ public class SecurityConfig {
 //        폼으로 로그인하기
         http.formLogin((formLogin)
                 -> formLogin.loginPage("/login")
+                .failureHandler((request, response, exception) -> {
+                    if (exception instanceof BadCredentialsException) {
+                        response.sendRedirect("/login?error=bad_credentials");
+                    } else {
+                        response.sendRedirect("/login?error=system_error");
+                    }
+                })
                 .defaultSuccessUrl("/calendar", true) // ← true 주의
         );
 
@@ -103,6 +111,9 @@ public class SecurityConfig {
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(customOAuth2UserService) // OAuth2UserService 등록
                 )
+                .failureHandler((request, response, exception) -> {
+                    response.sendRedirect("/login?error=oauth_error");
+                })
                 .defaultSuccessUrl("/calendar", true) // 로그인 성공 후 이동
         );
 

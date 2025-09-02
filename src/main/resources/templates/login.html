@@ -15,7 +15,11 @@
             <div class="tit">Login</div>
             <div class="txt">로 그 인</div>
             <div th:if="${param.error}">
-                <h4>아이디나 비번 틀림</h4>
+                <h4 th:switch="${param.error[0]}">
+                    <span th:case="'bad_credentials'">아이디나 비밀번호가 틀립니다.</span>
+                    <span th:case="'oauth_error'">이미 회원가입한 기록이 있습니다.</span>
+                    <span th:case="'system_error'">시스템 오류가 발생했습니다.</span>
+                </h4>
             </div>
             <form class="login_form" action="/login" method="POST">
                 <div class="form_wrap">

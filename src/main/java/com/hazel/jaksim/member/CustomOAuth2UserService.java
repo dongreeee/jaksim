@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2User oAuth2User = new DefaultOAuth2UserService().loadUser(userRequest);
 
         String provider = userRequest.getClientRegistration().getRegistrationId(); // google, kakao
-        String providerId;
+        String providerId ;
         String email;
         String name;
 
@@ -37,8 +38,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             name = oAuth2User.getAttribute("name");
 
         } else if ("kakao".equals(provider)) {
-            providerId = String.valueOf(oAuth2User.getAttribute("id")); // 카카오 고유 ID
-
+            System.out.println("dd???");
+            Long kakaoId = oAuth2User.getAttribute("id"); // Long으로 가져오기
+            providerId = String.valueOf(kakaoId);  // String으로 변환
+//            providerId = String.valueOf(oAuth2User.getAttribute("id")); // 카카오 고유 ID
+            System.out.println("sadasdas???");
             Map<String, Object> kakaoAccount = oAuth2User.getAttribute("kakao_account");
             email = kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
 
@@ -50,11 +54,21 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
 
         // DB에서 회원 조회
-        Optional<Member> memberOptional = memberRepository.findByProviderAndProviderId(provider, providerId);
+        Optional<Member> existingUser = memberRepository.findByUsername(email);
+
         Member member;
 
-        if (memberOptional.isPresent()) {
-            member = memberOptional.get(); // 기존 회원
+        if (existingUser.isPresent()) {
+            member = existingUser.get();
+
+            if (member.getProvider() == null) {
+                // 일반 가입자 → 소셜 로그인 불가
+                throw new OAuth2AuthenticationException(new OAuth2Error("email_already_registered"),
+                        "이미 해당 이메일로 가입된 계정이 있습니다. 일반 로그인을 이용해주세요.");
+            }
+
+
+
         } else {
             // 신규 회원 생성
             Member newMember = new Member();
