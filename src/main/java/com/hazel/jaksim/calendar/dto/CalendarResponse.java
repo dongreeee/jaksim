@@ -23,8 +23,9 @@ public class CalendarResponse {
     private double selectedPlaceLat;
     private double selectedPlaceLng;
     private String selectedPlaceUrl;
+    private String fileName;
 
-    public CalendarResponse(Long calendarId, String titleColor, String title, String content, String sdate, String edate,Boolean mapChk,Long mapId, String selectedPlaceName, String selectedPlaceAddress, double selectedPlaceLat, double selectedPlaceLng, String selectedPlaceUrl) {
+    public CalendarResponse(Long calendarId, String titleColor, String title, String content, String sdate, String edate,Boolean mapChk,Long mapId, String selectedPlaceName, String selectedPlaceAddress, double selectedPlaceLat, double selectedPlaceLng, String selectedPlaceUrl, String fileName) {
         CalendarId = calendarId;
         this.titleColor = titleColor;
         this.title = title;
@@ -38,6 +39,7 @@ public class CalendarResponse {
         this.selectedPlaceLat = selectedPlaceLat;
         this.selectedPlaceLng = selectedPlaceLng;
         this.selectedPlaceUrl = selectedPlaceUrl;
+        this.fileName = fileName;
     }
 
 

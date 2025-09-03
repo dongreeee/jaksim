@@ -47,7 +47,7 @@ public class CalendarService {
         dto.setContent(calendar.get().getContent());
         dto.setSdate(calendar.get().getSdate());
         dto.setEdate(calendar.get().getEdate());
-
+        dto.setFileName(calendar.get().getImgUrl());
         if(calendar.get().getMap() != null){
             map = mapRepository.findById(calendar.get().getMap().getId());
             dto.setSelectedPlaceName(map.get().getPlaceName());
@@ -80,6 +80,10 @@ public class CalendarService {
         calendar.setSdate(formDto.getSdate());
         calendar.setEdate(formDto.getEdate());
         calendar.setUsername(username);
+
+        if(formDto.getFilename() != null && !formDto.getFilename().isEmpty()){
+            calendar.setImgUrl(formDto.getFilename());
+        }
 
 //        map에 값이 있으면 calendar.setMap()을 호출해서 Calendar 객체에 지도 정보를 설정하고,
 //        값이 없으면 아무 것도 하지 않는다.

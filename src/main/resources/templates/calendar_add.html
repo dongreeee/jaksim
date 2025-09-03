@@ -255,10 +255,12 @@
         <div id="selectedPlaceInfo" style="margin-bottom: 12px; "></div>
 
         <div id="map"></div>
-
+        <input type = "hidden" name = "filename" id="filename">
+        <input type="file" onchange="getURL(this)">
         <button class="save-btn" type="submit">저장하기</button>
     </form>
 </div>
+
 
 <div id="placeSearchModal" class="modal">
     <div class="modal-content">
@@ -278,7 +280,42 @@
     </div>
 </div>
 
+<script>
+    let uploadedFileUrl = null;
 
+    async function getURL(e){
+        let file = e.files[0];
+        let name = encodeURIComponent(file.name);
+        let result = await fetch('/presigned-url?filename='+name);
+        result = await result.text();
+
+        let sendImg = await fetch(result, {
+            method: 'PUT',
+            body: e.files[0]
+        })
+
+        if(sendImg.ok){
+<!--           document.querySelector('img').src = sendImg.url.split("?")[0]-->
+<!--            // 파일이 성공적으로 업로드된 경우-->
+        uploadedFileUrl = result.split("?")[0];
+        document.getElementById('filename').value = uploadedFileUrl;
+        }else {
+            console.error('업로드 실패:', await sendImg.text());
+        }
+    }
+
+    // 폼 제출 이벤트
+const form = document.getElementById('calendarForm');
+form.addEventListener('submit', function(event){
+    // 파일 업로드 진행 중이면 제출 막기 (선택 사항)
+    const fileInput = form.querySelector('input[type="file"]');
+    if(fileInput.files.length > 0 && !uploadedFileUrl){
+        event.preventDefault();
+        alert('파일 업로드가 완료될 때까지 기다려주세요.');
+    }
+    // 파일 없거나 업로드 완료되면 그대로 제출
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 

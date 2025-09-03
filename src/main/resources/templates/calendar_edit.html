@@ -119,7 +119,7 @@
             </div>
 
         </div>
-
+        <img th:src= "${dto.fileName} != null ? @{${dto.fileName}} : 'https://placehold.co/300'">
         <div id="map" style="display:none;" ></div>
 
         <button type="submit" class="save-btn" onclick="submitForm()">수정하기</button>

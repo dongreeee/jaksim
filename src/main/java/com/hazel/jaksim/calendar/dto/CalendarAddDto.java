@@ -23,10 +23,11 @@ public class CalendarAddDto {
     private Double selectedPlaceLat;
     private Double selectedPlaceLng;
     private String selectedPlaceUrl;
+    private String filename;
 //    기본형(boolean, double 등)은 null을 가질 수 없고, 빈 문자열이 들어오면 변환 오류 발생
 //    래퍼클래스 (Boolean, Double 등)은 null을 허용하므로 값이 없으면 null로 받음 -> 유연하게 처리 가능
 
-    public CalendarAddDto(String titleColor, String title, String content, String sdate, String edate, String mapKeyword, boolean mapChk, String selectedPlaceName, String selectedPlaceAddress, double selectedPlaceLat, double selectedPlaceLng, String selectedPlaceUrl) {
+    public CalendarAddDto(String titleColor, String title, String content, String sdate, String edate, String mapKeyword, boolean mapChk, String selectedPlaceName, String selectedPlaceAddress, double selectedPlaceLat, double selectedPlaceLng, String selectedPlaceUrl, String filename) {
         this.titleColor = titleColor;
         this.title = title;
         this.content = content;
@@ -39,6 +40,7 @@ public class CalendarAddDto {
         this.selectedPlaceLat = selectedPlaceLat;
         this.selectedPlaceLng = selectedPlaceLng;
         this.selectedPlaceUrl = selectedPlaceUrl;
+        this.filename = filename;
     }
 
 

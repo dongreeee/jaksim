@@ -18,6 +18,7 @@ public class CalendarController {
 
     private final CalendarRepository calendarRepository;
     private final CalendarService calendarService;
+    private final S3Service s3Service;
 //    캘린더 view
     @GetMapping("/calendar")
     public String calendar(Model model, Authentication auth){
@@ -109,6 +110,14 @@ public class CalendarController {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         return calendarService.getTodosByDate(today , username);
+    }
+
+    @GetMapping("presigned-url")
+    @ResponseBody
+    String getURL(@RequestParam String filename){
+        var result = s3Service.createPresignedUrl("test/" +filename);
+        System.out.println(result);
+        return result;
     }
 
 }

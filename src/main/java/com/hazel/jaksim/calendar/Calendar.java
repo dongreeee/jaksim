@@ -31,4 +31,7 @@ public class Calendar {
 
     @Column(name = "regdate", insertable = false, updatable = false)
     private LocalDateTime regdate;
+
+    @Column(name="img_url")
+    private String imgUrl;
 }
