@@ -1,6 +1,8 @@
 package com.hazel.jaksim.map;
 
+import com.hazel.jaksim.calendar.Calendar;
 import com.hazel.jaksim.calendar.dto.CalendarAddDto;
+import com.hazel.jaksim.map.dto.PlaceDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,28 +12,31 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MapService {
 
-    private final MapRepository mapRepository;
+    private final MapInfoRepository mapInfoRepository;
+    private final CalendarMapRepository calendarMapRepository;
+
+    public MapInfo addMap(PlaceDto placeDto){
+
+        MapInfo mapInfo = new MapInfo();
+        mapInfo.setPlaceAddress(placeDto.getAddress());
+        mapInfo.setPlaceName(placeDto.getName());
+        mapInfo.setPlaceUrl(placeDto.getUrl());
+        mapInfo.setPlaceX(placeDto.getLng());
+        mapInfo.setPlaceY(placeDto.getLat());
+
+        return mapInfoRepository.save(mapInfo);
 
 
-    public Optional<Map> addMap(CalendarAddDto formDto){
+    }
 
-        Long map_id;
+    public void addCalendarMap(Long no, Calendar calendar, MapInfo mapInfo){
 
-
-        Map map = new Map();
-        map.setPlaceAddress(formDto.getSelectedPlaceAddress());
-        map.setPlaceName(formDto.getSelectedPlaceName());
-        map.setPlaceUrl(formDto.getSelectedPlaceUrl());
-        map.setPlaceX(formDto.getSelectedPlaceLng());
-        map.setPlaceY(formDto.getSelectedPlaceLat());
-        mapRepository.save(map);
-        map_id = map.getId();
-
-
-
-        Optional<Map> newMap = mapRepository.findById(map_id);
-
-        return newMap;
+        CalendarMap calendarMap = new CalendarMap();
+        calendarMap.setMapNo(no);
+        calendarMap.setCalendar(calendar);
+        calendarMap.setMapInfo(mapInfo);
+        // 필요하면 no를 CalendarMap에 저장 (선택)
+        calendarMapRepository.save(calendarMap);
 
     }
 

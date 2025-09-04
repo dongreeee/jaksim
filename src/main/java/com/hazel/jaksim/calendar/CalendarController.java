@@ -1,12 +1,17 @@
 package com.hazel.jaksim.calendar;
 
 import com.hazel.jaksim.calendar.dto.*;
+import com.hazel.jaksim.map.dto.PlaceDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,10 +49,14 @@ public class CalendarController {
     }
 
     @PostMapping("/addCalendar")
-    public String addCalender(@ModelAttribute CalendarAddDto formDto,
+    public String addCalender(@RequestParam String places,
+                              @ModelAttribute CalendarAddDto formDto,
                               Authentication auth){
         try{
-            calendarService.addCalendar(formDto, auth.getName());
+
+            ObjectMapper mapper = new ObjectMapper();
+            List<PlaceDto> placesJson = mapper.readValue(places, new TypeReference<List<PlaceDto>>() {});
+            calendarService.addCalendar(placesJson, formDto, auth.getName());
             return "redirect:/calendar";
         }
         catch (Exception e){

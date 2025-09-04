@@ -394,7 +394,7 @@ function onNotificationClick(messageId, calendarId) {
       const list = document.querySelector('.task-list');
       list.innerHTML = '';
       if (tasks.length === 0) {
-        list.innerHTML = '<div class="task"><em>No tasks for this day 🎉</em></div>';
+        list.innerHTML = '<div class="task"><p>오늘의 할일을 등록 해보세요!</p></div>';
       } else {
         tasks.forEach(todo => {
           const div = document.createElement('div');
@@ -408,7 +408,6 @@ function onNotificationClick(messageId, calendarId) {
         });
       }
       // 푸터
-      document.querySelector('.footer div').textContent = `${tasks.length} TASK${tasks.length !== 1 ? 'S' : ''}`;
       document.getElementById('todo_add_btn').href = '/todo/addView/' + dateKey;
     }
 
@@ -442,7 +441,7 @@ function onNotificationClick(messageId, calendarId) {
                               const list = document.querySelector('.task-list');
 
                               if (list.children.length === 0) {
-                                  list.innerHTML = '<div class="task"><em>No tasks for this day 🎉</em></div>';
+                                  list.innerHTML = '<div class="task"><p>오늘의 할일을 등록 해보세요!</p></div>';
                               }
                               if (todoDiv) {
                                   todoDiv.remove();

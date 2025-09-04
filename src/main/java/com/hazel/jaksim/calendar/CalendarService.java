@@ -1,13 +1,18 @@
 package com.hazel.jaksim.calendar;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hazel.jaksim.calendar.dto.*;
-import com.hazel.jaksim.map.Map;
-import com.hazel.jaksim.map.MapRepository;
+import com.hazel.jaksim.map.MapInfo;
+import com.hazel.jaksim.map.MapInfoRepository;
 import com.hazel.jaksim.map.MapService;
+import com.hazel.jaksim.map.dto.PlaceDto;
 import com.hazel.jaksim.websoket.Message;
 import com.hazel.jaksim.websoket.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,14 +22,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CalendarService {
     private final CalendarRepository calendarRepository;
-    private final MapRepository mapRepository;
+    private final MapInfoRepository mapInfoRepository;
     private final MessageRepository messageRepository;
 
     private final MapService mapService;
 
     public CalendarResponse getEditCalendar(Long id){
         Optional<Calendar> calendar = calendarRepository.findById(id);
-        Optional<com.hazel.jaksim.map.Map> map = Optional.empty();
+        Optional<MapInfo> map = Optional.empty();
         Boolean isMapChk = false;
 
 
@@ -48,8 +53,8 @@ public class CalendarService {
         dto.setSdate(calendar.get().getSdate());
         dto.setEdate(calendar.get().getEdate());
         dto.setFileName(calendar.get().getImgUrl());
-        if(calendar.get().getMap() != null){
-            map = mapRepository.findById(calendar.get().getMap().getId());
+        if(calendar.get().getMapInfo() != null){
+            map = mapInfoRepository.findById(calendar.get().getMapInfo().getId());
             dto.setSelectedPlaceName(map.get().getPlaceName());
             dto.setSelectedPlaceAddress(map.get().getPlaceAddress());
             dto.setSelectedPlaceLat(map.get().getPlaceX());
@@ -63,15 +68,7 @@ public class CalendarService {
         return dto;
     }
 
-    public void addCalendar(CalendarAddDto formDto, String username){
-        Optional<com.hazel.jaksim.map.Map>map = Optional.empty();
-
-        if (Boolean.TRUE.equals(formDto.getMapChk())) {
-            // 위도/경도 필드가 모두 존재할 때만 지도 저장 시도
-            if (formDto.getSelectedPlaceLat() != null && formDto.getSelectedPlaceLng() != null) {
-                map = mapService.addMap(formDto);
-            }
-        }
+    public void addCalendar(List<PlaceDto>placeDtos, CalendarAddDto formDto, String username) throws JsonProcessingException {
 
         Calendar calendar = new Calendar();
         calendar.setTitle(formDto.getTitle());
@@ -91,9 +88,18 @@ public class CalendarService {
 //            calendar.setMap(map.get()); // 그 값을 calendar.setMap()에 넣어줌
 //        }
         // map이 존재하면 저장
-        map.ifPresent(calendar::setMap);
+//        map.ifPresent(calendar::setMapInfo);
 
         calendarRepository.save(calendar);
+
+        if (placeDtos != null) {
+
+            for (PlaceDto placeDto : placeDtos) {  // ✅ places는 이제 method parameter로 전달
+                MapInfo mapInfo = mapService.addMap(placeDto);
+                mapService.addCalendarMap(placeDto.getNo(), calendar, mapInfo);
+            }
+        }
+
     }
 
     public void updateCalendar(CalendarUpdateDto dto) {
@@ -122,7 +128,7 @@ public class CalendarService {
                 .orElseThrow(()-> new RuntimeException("Calendar not found"));
 
         Optional<Message> message = messageRepository.findById(messageId);
-        Optional<com.hazel.jaksim.map.Map> map = Optional.empty();
+        Optional<MapInfo> map = Optional.empty();
         Boolean isMapChk = false;
         Boolean isSharedChk = false;
 
@@ -147,8 +153,8 @@ public class CalendarService {
         dto.setSdate(calendar.getSdate());
         dto.setEdate(calendar.getEdate());
 
-        if (calendar.getMap() != null) {
-            map = mapRepository.findById(calendar.getMap().getId());
+        if (calendar.getMapInfo() != null) {
+            map = mapInfoRepository.findById(calendar.getMapInfo().getId());
             map.ifPresent(m -> {
                 dto.setMapId(m.getId());
                 dto.setSelectedPlaceName(m.getPlaceName());
@@ -172,10 +178,10 @@ public class CalendarService {
     }
 
     public void shareCalendarAdd(SharedCalendarAddDto formDto, String username){
-        com.hazel.jaksim.map.Map map = null;
+        MapInfo mapInfo = null;
 
         if (formDto.getMapId() != null) {
-            map = mapRepository.findById(formDto.getMapId()).orElse(null);
+            mapInfo = mapInfoRepository.findById(formDto.getMapId()).orElse(null);
         }
 
         Calendar calendar = new Calendar();
@@ -185,7 +191,7 @@ public class CalendarService {
         calendar.setSdate(formDto.getSdate());
         calendar.setEdate(formDto.getEdate());
         calendar.setUsername(username);
-        calendar.setMap(map);
+        calendar.setMapInfo(mapInfo);
 
         System.out.println(formDto.getMessageId());
         calendarRepository.save(calendar);

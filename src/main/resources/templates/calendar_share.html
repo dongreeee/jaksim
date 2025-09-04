@@ -58,7 +58,7 @@
           background-color: #0056b3;
         }
 
-        #map{
+        #mapInfo{
           width: 100%;
           height: 250px;
           border-radius: 10px;
@@ -121,7 +121,7 @@
         </div>
         <input type="hidden" name="mapChk" id="mapChk" th:value="${dto.mapChk}">
         <input type="hidden" name="mapId" id="mapId" th:value="${dto.mapId}">
-        <div id="map" style="display:none;" ></div>
+        <div id="mapInfo" style="display:none;" ></div>
 
         <button th:unless="${sharedChk}" type="submit" class="save-btn" onclick="submitForm()">나의 캘린더에 저장</button>
         <p th:if="${sharedChk}" style="color:red; text-align: center; margin-top:10px;">이미 등록된 캘린더입니다.</p>
@@ -156,16 +156,16 @@
 
       function createMap(placeName,placeLat,placeLng,placeUrl){
       console.log('22Lat:', placeLat, 'Lng:', placeLng, 'shouldCreateMap:', shouldCreateMap);
-      document.getElementById('map').style.display = 'block';
-           var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+      document.getElementById('mapInfo').style.display = 'block';
+           var mapContainer = document.getElementById('mapInfo'), // 지도를 표시할 div
          mapOption = {
                center: new kakao.maps.LatLng(placeLng, placeLat), // 지도의 중심좌표
                level: 4 // 지도의 확대 레벨
            };
 
-       var map = new kakao.maps.Map(mapContainer, mapOption);
+       var mapInfo = new kakao.maps.Map(mapContainer, mapOption);
 
-       var imageSrc = '../images/map-icon.png', // 마커이미지의 주소입니다
+       var imageSrc = '../images/mapInfo-icon.png', // 마커이미지의 주소입니다
            imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
            imageOption = {offset: new kakao.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
 
@@ -180,7 +180,7 @@
        });
 
        // 마커가 지도 위에 표시되도록 설정합니다
-       marker.setMap(map);
+       marker.setMap(mapInfo);
 
        // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
        var content = '<div class="customoverlay">' +
@@ -194,7 +194,7 @@
 
        // 커스텀 오버레이를 생성합니다
        var customOverlay = new kakao.maps.CustomOverlay({
-           map: map,
+           mapInfo: mapInfo,
            position: position,
            content: content,
            yAnchor: 1

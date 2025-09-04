@@ -2,5 +2,5 @@ package com.hazel.jaksim.map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MapRepository extends JpaRepository<Map,Long> {
+public interface MapInfoRepository extends JpaRepository<MapInfo,Long> {
 }
