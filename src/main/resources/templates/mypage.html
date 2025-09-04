@@ -64,7 +64,9 @@
                 <div class="login_btns"><button type="submit" class="btn_bk">정보수정</button></div>
 
             </form>
-
+            <div class="logout_btns" th:if="${#authentication.principal.socialLogin}">
+                <a href="/logout" class="delete-btn">로 그 아 웃</a>
+            </div>
         </div>
 
     </div>
