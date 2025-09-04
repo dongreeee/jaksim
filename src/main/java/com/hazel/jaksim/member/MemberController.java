@@ -1,7 +1,9 @@
 package com.hazel.jaksim.member;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,7 +41,8 @@ public class MemberController {
     }
 
     @PostMapping("/userUpdate")
-    public String updateMember(String socialLogin,
+    public String updateMember(@AuthenticationPrincipal CustomUser customerUser,
+                               String socialLogin,
                                String username,
                                String password,
                                String rePassword,
@@ -47,7 +50,7 @@ public class MemberController {
                                Model model){
         try{
             boolean isSocialLogin = Boolean.parseBoolean(socialLogin);
-            memberService.updateMember(isSocialLogin, username, password, rePassword, displayName);
+            memberService.updateMember(customerUser, isSocialLogin, username, password, rePassword, displayName);
             return "redirect:/calendar";
         }
         catch (Exception e){

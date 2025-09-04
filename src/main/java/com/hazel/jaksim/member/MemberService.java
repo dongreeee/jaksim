@@ -55,7 +55,8 @@ public class MemberService {
         return bl_check;
     }
 
-    public void updateMember(boolean socialLogin,
+    public void updateMember(CustomUser customUser,
+                               boolean socialLogin,
                                String username,
                                String password,
                                String rePassword,
@@ -67,8 +68,7 @@ public class MemberService {
 
         member.setDisplayname(displayName);
         // 소셜 로그인일경우 비밀번호 체크 & 저장 x
-        if(socialLogin){
-        }else{
+        if(!socialLogin){
             // 비밀번호가 입력된 경우만 변경
             if (password != null && !password.isBlank()) {
                 if (!password.equals(rePassword)) {
@@ -86,6 +86,9 @@ public class MemberService {
         }
 
         memberRepository.save(member);
+
+//        세션 갱신
+        customUser.displayName = displayName;
 
     }
 
