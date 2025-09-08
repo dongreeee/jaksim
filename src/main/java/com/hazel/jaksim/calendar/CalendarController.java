@@ -1,6 +1,8 @@
 package com.hazel.jaksim.calendar;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hazel.jaksim.calendar.dto.*;
+import com.hazel.jaksim.map.MapService;
 import com.hazel.jaksim.map.dto.PlaceDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ public class CalendarController {
 
     private final CalendarRepository calendarRepository;
     private final CalendarService calendarService;
+    private final MapService mapService;
+
     private final S3Service s3Service;
 //    캘린더 view
     @GetMapping("/calendar")
@@ -40,10 +44,16 @@ public class CalendarController {
     }
 
     @GetMapping("/editCalendarView/{id}")
-    public String editCalendar(@PathVariable Long id, Model model ){
+    public String editCalendar(@PathVariable Long id, Model model ) throws JsonProcessingException {
 
         CalendarResponse dto = calendarService.getEditCalendar(id);
+        List<PlaceDto> places = mapService.getPlacesByCalendarId(id);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String placesJson = mapper.writeValueAsString(places);
+
         model.addAttribute("dto", dto);
+        model.addAttribute("placesJson", placesJson);
 
         return "calendar_edit.html";
     }

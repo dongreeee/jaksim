@@ -17,15 +17,9 @@ public class CalendarResponse {
     private String sdate;
     private String edate;
     private Boolean mapChk;
-    private Long mapId;
-    private String selectedPlaceName;
-    private String selectedPlaceAddress;
-    private double selectedPlaceLat;
-    private double selectedPlaceLng;
-    private String selectedPlaceUrl;
     private String fileName;
 
-    public CalendarResponse(Long calendarId, String titleColor, String title, String content, String sdate, String edate,Boolean mapChk,Long mapId, String selectedPlaceName, String selectedPlaceAddress, double selectedPlaceLat, double selectedPlaceLng, String selectedPlaceUrl, String fileName) {
+    public CalendarResponse(Long calendarId, String titleColor, String title, String content, String sdate, String edate,Boolean mapChk, String fileName) {
         CalendarId = calendarId;
         this.titleColor = titleColor;
         this.title = title;
@@ -33,12 +27,6 @@ public class CalendarResponse {
         this.sdate = sdate;
         this.edate = edate;
         this.mapChk = mapChk;
-        this.mapId = mapId;
-        this.selectedPlaceName = selectedPlaceName;
-        this.selectedPlaceAddress = selectedPlaceAddress;
-        this.selectedPlaceLat = selectedPlaceLat;
-        this.selectedPlaceLng = selectedPlaceLng;
-        this.selectedPlaceUrl = selectedPlaceUrl;
         this.fileName = fileName;
     }
 

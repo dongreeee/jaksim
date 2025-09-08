@@ -2,9 +2,7 @@ package com.hazel.jaksim.calendar;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hazel.jaksim.calendar.dto.*;
-import com.hazel.jaksim.map.MapInfo;
-import com.hazel.jaksim.map.MapInfoRepository;
-import com.hazel.jaksim.map.MapService;
+import com.hazel.jaksim.map.*;
 import com.hazel.jaksim.map.dto.PlaceDto;
 import com.hazel.jaksim.websoket.Message;
 import com.hazel.jaksim.websoket.MessageRepository;
@@ -23,27 +21,17 @@ import java.util.Optional;
 public class CalendarService {
     private final CalendarRepository calendarRepository;
     private final MapInfoRepository mapInfoRepository;
+    private final CalendarMapRepository calendarMapRepository;
     private final MessageRepository messageRepository;
 
     private final MapService mapService;
 
     public CalendarResponse getEditCalendar(Long id){
         Optional<Calendar> calendar = calendarRepository.findById(id);
+        List<CalendarMap> calendarMap = calendarMapRepository.findByCalendarId(id);
         Optional<MapInfo> map = Optional.empty();
         Boolean isMapChk = false;
 
-
-//        private Long CalendarId;
-//        private String titleColor;
-//        private String title;
-//        private String content;
-//        private String sdate;
-//        private String edate;
-//        private String selectedPlaceName;
-//        private String selectedPlaceAddress;
-//        private double selectedPlaceLat;
-//        private double selectedPlaceLng;
-//        private String selectedPlaceUrl;
 
         CalendarResponse dto = new CalendarResponse();
         dto.setCalendarId(id);
@@ -53,13 +41,7 @@ public class CalendarService {
         dto.setSdate(calendar.get().getSdate());
         dto.setEdate(calendar.get().getEdate());
         dto.setFileName(calendar.get().getImgUrl());
-        if(calendar.get().getMapInfo() != null){
-            map = mapInfoRepository.findById(calendar.get().getMapInfo().getId());
-            dto.setSelectedPlaceName(map.get().getPlaceName());
-            dto.setSelectedPlaceAddress(map.get().getPlaceAddress());
-            dto.setSelectedPlaceLat(map.get().getPlaceX());
-            dto.setSelectedPlaceLng(map.get().getPlaceY());
-            dto.setSelectedPlaceUrl(map.get().getPlaceUrl());
+        if(!calendarMap.isEmpty()){
             isMapChk = true;
         }
 
@@ -155,14 +137,14 @@ public class CalendarService {
 
         if (calendar.getMapInfo() != null) {
             map = mapInfoRepository.findById(calendar.getMapInfo().getId());
-            map.ifPresent(m -> {
-                dto.setMapId(m.getId());
-                dto.setSelectedPlaceName(m.getPlaceName());
-                dto.setSelectedPlaceAddress(m.getPlaceAddress());
-                dto.setSelectedPlaceLat(m.getPlaceX());
-                dto.setSelectedPlaceLng(m.getPlaceY());
-                dto.setSelectedPlaceUrl(m.getPlaceUrl());
-            });
+//            map.ifPresent(m -> {
+//                dto.setMapId(m.getId());
+//                dto.setSelectedPlaceName(m.getPlaceName());
+//                dto.setSelectedPlaceAddress(m.getPlaceAddress());
+//                dto.setSelectedPlaceLat(m.getPlaceX());
+//                dto.setSelectedPlaceLng(m.getPlaceY());
+//                dto.setSelectedPlaceUrl(m.getPlaceUrl());
+//            });
             isMapChk = true;
         }
 
