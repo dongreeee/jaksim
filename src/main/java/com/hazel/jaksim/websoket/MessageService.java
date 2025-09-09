@@ -23,6 +23,7 @@ public class MessageService {
     private final SimpMessagingTemplate messagingTemplate;
 
     public ResponseEntity<String> shareCalendar(ShareMsgDto dto, String sender) {
+        System.out.println(dto.getCalendarId()+dto.getUsername());
         Optional<Member> member = memberRepository.findByUsername(dto.getUsername());
         Optional<Calendar> calendar = calendarRepository.findById(dto.getCalendarId());
 

@@ -75,13 +75,6 @@
 </head>
 <body>
 
-
-<input type="hidden" name="selectedPlaceName" id="selectedPlaceName" th:value="${dto.selectedPlaceName}">
-<input type="hidden" name="selectedPlaceAddress" id="selectedPlaceAddress" th:value="${dto.selectedPlaceAddress}">
-<input type="hidden" name="SelectedPlaceLat" id="selectedPlaceLat" th:value="${dto.SelectedPlaceLat}">
-<input type="hidden" name="selectedPlaceLng" id="selectedPlaceLng" th:value="${dto.selectedPlaceLng}">
-<input type="hidden" name="selectedPlaceUrl" id="selectedPlaceUrl" th:value="${dto.selectedPlaceUrl}">
-
 <div th:replace="~{nav.html::navbar}"></div>
 <div class="container" style="margin-top:30px; padding:20px;">
     <form id="calendarForm" action="/sharedCalenderAdd" method="post">
@@ -120,7 +113,7 @@
 
         </div>
         <input type="hidden" name="mapChk" id="mapChk" th:value="${dto.mapChk}">
-        <input type="hidden" name="mapId" id="mapId" th:value="${dto.mapId}">
+        <input type="hidden" id="placesData" th:value='${placesJson}' />
         <div id="mapInfo" style="display:none;" ></div>
 
         <button th:unless="${sharedChk}" type="submit" class="save-btn" onclick="submitForm()">나의 캘린더에 저장</button>
@@ -138,69 +131,72 @@
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=	db0946b54e87a1652fbd99ff96a402de"></script>
 
-<script>
+<<script>
     document.addEventListener('DOMContentLoaded', function () {
-<!--    boolean으로 변환 -->
-        const shouldCreateMap = document.getElementById('mapChk').value === "true";
-        const placeName =  document.getElementById('selectedPlaceName').value;
-        const placeAddress =  document.getElementById('selectedPlaceAddress').value;
-        const placeLat =  document.getElementById('selectedPlaceLat').value;
-        const placeLng =  document.getElementById('selectedPlaceLng').value;
-        const placeUrl =  document.getElementById('selectedPlaceUrl').value;
+        const shouldCreateMap = document.getElementById("mapChk").value === "true";
+        if (!shouldCreateMap) return;
 
-        console.log(shouldCreateMap);
-        if (shouldCreateMap) {
-        console.log('11Lat:', placeLat, 'Lng:', placeLng, 'shouldCreateMap:', shouldCreateMap);
-          createMap(placeName,placeLat,placeLng,placeUrl);
-        }
+        const places = JSON.parse(document.getElementById("placesData").value);
+        if (places.length === 0) return;
 
-      function createMap(placeName,placeLat,placeLng,placeUrl){
-      console.log('22Lat:', placeLat, 'Lng:', placeLng, 'shouldCreateMap:', shouldCreateMap);
-      document.getElementById('mapInfo').style.display = 'block';
-           var mapContainer = document.getElementById('mapInfo'), // 지도를 표시할 div
-         mapOption = {
-               center: new kakao.maps.LatLng(placeLng, placeLat), // 지도의 중심좌표
-               level: 4 // 지도의 확대 레벨
-           };
+        const mapContainer = document.getElementById("mapInfo");
+        mapContainer.style.display = "block"; // 지도 div 보이기
 
-       var mapInfo = new kakao.maps.Map(mapContainer, mapOption);
+        // 지도 초기 중심 (첫 장소)
+        const mapOption = {
+            center: new kakao.maps.LatLng(places[0].lat, places[0].lng),
+            level: 4
+        };
 
-       var imageSrc = '../images/mapInfo-icon.png', // 마커이미지의 주소입니다
-           imageSize = new kakao.maps.Size(30, 30), // 마커이미지의 크기입니다
-           imageOption = {offset: new kakao.maps.Point(15, 30)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+        const map = new kakao.maps.Map(mapContainer, mapOption);
 
-       // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
-       var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
-           markerPosition = new kakao.maps.LatLng(placeLng, placeLat); // 마커가 표시될 위치입니다
+        // bounds 객체 생성 (모든 마커가 보이도록)
+        const bounds = new kakao.maps.LatLngBounds();
 
-       // 마커를 생성합니다
-       var marker = new kakao.maps.Marker({
-         position: markerPosition,
-         image: markerImage // 마커이미지 설정
-       });
 
-       // 마커가 지도 위에 표시되도록 설정합니다
-       marker.setMap(mapInfo);
 
-       // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-       var content = '<div class="customoverlay">' +
-           ` <a href="${placeUrl}" target="_blank"> `  +
-           `    <span class="title">${placeName}</span>` +
-           '  </a>' +
-           '</div>';
+        // 마커와 오버레이 생성
+        places.forEach(place => {
 
-       // 커스텀 오버레이가 표시될 위치입니다
-       var position = new kakao.maps.LatLng(placeLng, placeLat);
+                    // 마커 이미지
+        const imageSrc = '../images/map-icon-' + place.no + '.png',
+              imageSize = new kakao.maps.Size(30, 30),
+              imageOption = { offset: new kakao.maps.Point(15, 30) };
+        const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
 
-       // 커스텀 오버레이를 생성합니다
-       var customOverlay = new kakao.maps.CustomOverlay({
-           mapInfo: mapInfo,
-           position: position,
-           content: content,
-           yAnchor: 1
-       });
-      }
-})
+            const position = new kakao.maps.LatLng(place.lat, place.lng);
+            bounds.extend(position); // bounds에 좌표 포함
+
+            const marker = new kakao.maps.Marker({
+                position: position,
+                image: markerImage
+            });
+            marker.setMap(map);
+
+            const content = `
+                <div class="customoverlay">
+                    <a href="${place.url}" target="_blank">
+                        <span class="title">${place.name}</span>
+                    </a>
+                </div>`;
+            const customOverlay = new kakao.maps.CustomOverlay({
+                position: position,
+                content: content,
+                yAnchor: 1
+            });
+
+            // 마커 클릭 시 오버레이 표시
+            kakao.maps.event.addListener(marker, 'click', function () {
+                customOverlay.setMap(map);
+            });
+        });
+
+        // 모든 마커가 보이도록 지도 영역 조정
+        map.setBounds(bounds);
+
+        // 생성 후 relayout 호출: div 크기 재반영
+        map.relayout();
+    });
 </script>
 
 <script>

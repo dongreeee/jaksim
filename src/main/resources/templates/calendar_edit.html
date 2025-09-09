@@ -251,12 +251,13 @@
     function share() {
       const id = document.getElementById('share_id').value;
       const calendar_id = document.getElementById('calendar_id').value;
+      console.log(calendar_id);
       fetch('/share', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ username : id, calendar_id: calendar_id})
+                body: JSON.stringify({ username : id, calendarId: calendar_id})
                 })
                 .then(async res => {
     const msg = await res.text();

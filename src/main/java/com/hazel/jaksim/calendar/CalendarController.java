@@ -99,11 +99,16 @@ public class CalendarController {
     public String viewSharedCalendar(@PathVariable Long messageId,
                                      @PathVariable Long calendarId,
                                      Authentication auth,
-                                     Model model){
+                                     Model model) throws JsonProcessingException {
 
         CalendarViewDataDto viewData = calendarService.getShareCalendar(messageId, calendarId);
+        List<PlaceDto> places = mapService.getPlacesByCalendarId(calendarId);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String placesJson = mapper.writeValueAsString(places);
 
         model.addAttribute("dto", viewData.getDto());
+        model.addAttribute("placesJson", placesJson);
         model.addAttribute("msgId", viewData.getMsgId());
         model.addAttribute("sharedChk", viewData.isSharedChk());
 

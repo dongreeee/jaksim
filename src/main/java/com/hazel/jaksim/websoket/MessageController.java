@@ -21,10 +21,11 @@ public class MessageController {
 
     private final MessageRepository messageRepository;
 
-    private MessageService messageService;
+    private final MessageService messageService;
 
     @PostMapping("/share")
     public ResponseEntity<String> share(@RequestBody ShareMsgDto dto, Authentication auth) {
+        System.out.println(dto);
         return messageService.shareCalendar(dto, auth.getName());
     }
 
