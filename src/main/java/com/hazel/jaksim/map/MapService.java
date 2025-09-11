@@ -1,13 +1,11 @@
 package com.hazel.jaksim.map;
 
 import com.hazel.jaksim.calendar.Calendar;
-import com.hazel.jaksim.calendar.dto.CalendarAddDto;
 import com.hazel.jaksim.map.dto.PlaceDto;
 import com.hazel.jaksim.map.dto.PlaceMapDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +59,7 @@ public class MapService {
                 })
                 .toList();
     }
+
 
     public List<PlaceMapDto> getPlacesMapByCalendarId(Long calendarId){
         List<CalendarMap> calendarMaps = calendarMapRepository.findByCalendarId(calendarId);

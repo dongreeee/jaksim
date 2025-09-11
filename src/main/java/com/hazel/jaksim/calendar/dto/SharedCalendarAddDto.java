@@ -11,18 +11,6 @@ import lombok.ToString;
 @ToString
 public class SharedCalendarAddDto {
 
-    public SharedCalendarAddDto(String titleColor, String title, String content, String sdate, String edate, String mapKeyword, boolean mapChk, Long mapId, Long messageId) {
-        this.titleColor = titleColor;
-        this.title = title;
-        this.content = content;
-        this.sdate = sdate;
-        this.edate = edate;
-        this.mapKeyword = mapKeyword;
-        this.mapChk = mapChk;
-        this.mapId = mapId;
-        this.messageId = messageId;
-    }
-
     private String titleColor;
     private String title;
     private String content;
@@ -32,6 +20,22 @@ public class SharedCalendarAddDto {
     private boolean mapChk;
     private Long mapId;
     private Long messageId;
+    private String fileName;
+
+    public SharedCalendarAddDto(String titleColor, String title, String content, String sdate, String edate, String mapKeyword, boolean mapChk, Long mapId, Long messageId, String fileName) {
+        this.titleColor = titleColor;
+        this.title = title;
+        this.content = content;
+        this.sdate = sdate;
+        this.edate = edate;
+        this.mapKeyword = mapKeyword;
+        this.mapChk = mapChk;
+        this.mapId = mapId;
+        this.messageId = messageId;
+        this.fileName = fileName;
+
+    }
+
 
 
 }

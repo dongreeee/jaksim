@@ -112,8 +112,14 @@
             </div>
 
         </div>
-        <input type="hidden" name="mapChk" id="mapChk" th:value="${dto.mapChk}">
-        <input type="hidden" id="placesData" th:value='${placesJson}' />
+
+        <div th:if="${dto.fileName != null and dto.fileName != ''}">
+            <input type="hidden" id="fileName" name="fileName" th:value="${dto.fileName}" />
+            <img style="width:100%;" th:src= "@{${dto.fileName}}">
+        </div>
+
+        <input type="hidden" name="mapChk" id="mapChk" th:value="${dto.mapChk}" />
+        <input type="hidden" name = "places" id="places" th:value='${placesJson}' />
         <div id="mapInfo" style="display:none;" ></div>
 
         <button th:unless="${sharedChk}" type="submit" class="save-btn" onclick="submitForm()">나의 캘린더에 저장</button>
@@ -131,12 +137,12 @@
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=	db0946b54e87a1652fbd99ff96a402de"></script>
 
-<<script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         const shouldCreateMap = document.getElementById("mapChk").value === "true";
         if (!shouldCreateMap) return;
 
-        const places = JSON.parse(document.getElementById("placesData").value);
+        const places = JSON.parse(document.getElementById("places").value);
         if (places.length === 0) return;
 
         const mapContainer = document.getElementById("mapInfo");
@@ -159,7 +165,7 @@
         places.forEach(place => {
 
                     // 마커 이미지
-        const imageSrc = '../images/map-icon-' + place.no + '.png',
+        const imageSrc = '/images/map-icon-' + place.no + '.png',
               imageSize = new kakao.maps.Size(30, 30),
               imageOption = { offset: new kakao.maps.Point(15, 30) };
         const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);

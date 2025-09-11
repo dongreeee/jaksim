@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hazel.jaksim.calendar.dto.*;
 import com.hazel.jaksim.map.MapService;
 import com.hazel.jaksim.map.dto.PlaceDto;
+import com.hazel.jaksim.map.dto.PlaceMapDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -53,7 +55,7 @@ public class CalendarController {
         String placesJson = mapper.writeValueAsString(places);
 
         model.addAttribute("dto", dto);
-        model.addAttribute("placesJson", placesJson);
+        model.addAttribute("placesJson", placesJson != null ? placesJson : "[]");
 
         return "calendar_edit.html";
     }
@@ -63,7 +65,10 @@ public class CalendarController {
                               @ModelAttribute CalendarAddDto formDto,
                               Authentication auth){
         try{
-
+            if (places == null || places.isBlank()) {
+                places = "[]"; // 빈 리스트 처리
+            }
+//           빈값처리 안 하면 No content to map due to end-of-input 발생
             ObjectMapper mapper = new ObjectMapper();
             List<PlaceDto> placesJson = mapper.readValue(places, new TypeReference<List<PlaceDto>>() {});
             calendarService.addCalendar(placesJson, formDto, auth.getName());
@@ -102,11 +107,16 @@ public class CalendarController {
                                      Model model) throws JsonProcessingException {
 
         CalendarViewDataDto viewData = calendarService.getShareCalendar(messageId, calendarId);
-        List<PlaceDto> places = mapService.getPlacesByCalendarId(calendarId);
+        List<PlaceMapDto> places = mapService.getPlacesMapByCalendarId(calendarId);
+
+        if (places == null) {
+            places = Collections.emptyList();
+        }
 
         ObjectMapper mapper = new ObjectMapper();
         String placesJson = mapper.writeValueAsString(places);
 
+        System.out.println(viewData.getDto());
         model.addAttribute("dto", viewData.getDto());
         model.addAttribute("placesJson", placesJson);
         model.addAttribute("msgId", viewData.getMsgId());
@@ -116,10 +126,18 @@ public class CalendarController {
     }
 
     @PostMapping("/sharedCalenderAdd")
-    public String sharedCalenderAdd(@ModelAttribute SharedCalendarAddDto formDto,
-                              Authentication auth){
-        try{
-            calendarService.shareCalendarAdd(formDto, auth.getName());
+    public String sharedCalenderAdd(@RequestParam("places") String places,
+                                    @ModelAttribute SharedCalendarAddDto formDto,
+                                    Authentication auth) throws JsonProcessingException {
+        if (places == null) {
+            places = Collections.emptyList().toString();
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<PlaceMapDto> placesJson = mapper.readValue(places, new TypeReference<List<PlaceMapDto>>() {});
+
+       try{
+            calendarService.shareCalendarAdd(placesJson, formDto, auth.getName());
             return "redirect:/calendar";
         }
         catch (Exception e){

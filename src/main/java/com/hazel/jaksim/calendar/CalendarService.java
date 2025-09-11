@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hazel.jaksim.calendar.dto.*;
 import com.hazel.jaksim.map.*;
 import com.hazel.jaksim.map.dto.PlaceDto;
+import com.hazel.jaksim.map.dto.PlaceMapDto;
 import com.hazel.jaksim.websoket.Message;
 import com.hazel.jaksim.websoket.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -106,11 +104,15 @@ public class CalendarService {
 
 
     public CalendarViewDataDto getShareCalendar(Long messageId, Long calendarId){
+
+
+
         Calendar calendar = calendarRepository.findById(calendarId)
                 .orElseThrow(()-> new RuntimeException("Calendar not found"));
 
         Optional<Message> message = messageRepository.findById(messageId);
         Optional<MapInfo> map = Optional.empty();
+        List<CalendarMap> calendarMap = calendarMapRepository.findByCalendarId(calendarId);
         Boolean isMapChk = false;
         Boolean isSharedChk = false;
 
@@ -134,17 +136,9 @@ public class CalendarService {
         dto.setContent(calendar.getContent());
         dto.setSdate(calendar.getSdate());
         dto.setEdate(calendar.getEdate());
+        dto.setFileName(calendar.getImgUrl());
 
-        if (calendar.getMapInfo() != null) {
-            map = mapInfoRepository.findById(calendar.getMapInfo().getId());
-//            map.ifPresent(m -> {
-//                dto.setMapId(m.getId());
-//                dto.setSelectedPlaceName(m.getPlaceName());
-//                dto.setSelectedPlaceAddress(m.getPlaceAddress());
-//                dto.setSelectedPlaceLat(m.getPlaceX());
-//                dto.setSelectedPlaceLng(m.getPlaceY());
-//                dto.setSelectedPlaceUrl(m.getPlaceUrl());
-//            });
+        if(!calendarMap.isEmpty()){
             isMapChk = true;
         }
 
@@ -159,12 +153,9 @@ public class CalendarService {
         return new CalendarViewDataDto(dto, messageId, isSharedChk);
     }
 
-    public void shareCalendarAdd(SharedCalendarAddDto formDto, String username){
-        MapInfo mapInfo = null;
-
-        if (formDto.getMapId() != null) {
-            mapInfo = mapInfoRepository.findById(formDto.getMapId()).orElse(null);
-        }
+    public void shareCalendarAdd(List<PlaceMapDto> placeDtos, SharedCalendarAddDto formDto, String username){
+        System.out.println(placeDtos);
+        System.out.println(formDto);
 
         Calendar calendar = new Calendar();
         calendar.setTitle(formDto.getTitle());
@@ -173,10 +164,25 @@ public class CalendarService {
         calendar.setSdate(formDto.getSdate());
         calendar.setEdate(formDto.getEdate());
         calendar.setUsername(username);
-        calendar.setMapInfo(mapInfo);
+
+
+        if(formDto.getFileName() != null && !formDto.getFileName().isEmpty()){
+            calendar.setImgUrl(formDto.getFileName());
+        }
+
 
         System.out.println(formDto.getMessageId());
         calendarRepository.save(calendar);
+
+        if (placeDtos != null) {
+
+            for (PlaceMapDto placeDto : placeDtos) {  // ✅ places는 이제 method parameter로 전달
+                Optional<MapInfo> mapInfo = mapInfoRepository.findById(placeDto.getMapId());
+                mapService.addCalendarMap(placeDto.getNo(), calendar, mapInfo.orElse(null));
+            }
+        }
+
+
         Optional<Message> optionalMessage = messageRepository.findById(formDto.getMessageId());
         if(optionalMessage.isPresent()){
             System.out.println("message Update");
