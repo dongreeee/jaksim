@@ -184,7 +184,8 @@ let currentMonth = new Date().getMonth(); // 0 ~ 11
 
   calendar.appendChild(days);
 
-
+ // ✅ 특정 달의 목표 타이틀 가져오기
+  fetchMonthlyGoalView1(year, month + 1); // month는 0~11이므로 +1
 <!--div 다 생성후에 작동해야 오류가 안난다 ~ -->
   fetchMonthlyGoalView();
 
@@ -206,10 +207,10 @@ function changeMonth(offset) {
   const nextYm = `${nextYear}-${String(nextMonth + 1).padStart(2, '0')}`;
 
   // ✅ allowedMonths에 포함된 월인지 검사
-  if (!allowedMonths.includes(nextYm)) {
-    alert('해당 월은 기록이 없거나 볼 수 없는 달입니다.');
-    return;
-  }
+<!--  if (!allowedMonths.includes(nextYm)) {-->
+<!--    alert('해당 월은 기록이 없거나 볼 수 없는 달입니다.');-->
+<!--    return;-->
+<!--  }-->
 
   // ✅ 월/년 변경 후 렌더링
   currentMonth = nextMonth;
@@ -257,6 +258,8 @@ function changeMonth(offset) {
                  renderCalendar3();          // ✅ 이모지 없어도 달력 그리기
                });
      }
+
+
 </script>
 
 
@@ -296,6 +299,25 @@ fetch(`/monthlyGoal/info/${ym}`)
     document.getElementById('goal_update').style.display = 'none';
   });
   }
+
+  function fetchMonthlyGoalView1(year, month) {
+  const ym = `${year}-${String(month).padStart(2, '0')}`;
+
+  fetch(`/monthlyGoal/info/${ym}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.title) {
+        document.getElementById('goal_update').style.display = 'inline';
+        document.getElementById('goal_update').textContent = data.title;
+      } else {
+        document.getElementById('goal_update').style.display = 'none';
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('goal_update').style.display = 'none';
+    });
+}
 
   function goalMonthly() {
 
