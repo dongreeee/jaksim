@@ -21,7 +21,7 @@
                     <span th:case="'system_error'">시스템 오류가 발생했습니다.</span>
                 </h4>
             </div>
-            <form class="login_form" action="/login" method="POST">
+            <form class="login_form" th:action="@{/login}" method="POST">
                 <div class="form_wrap">
                     <div class="input_box">
                         <div class="login_input">

@@ -23,6 +23,8 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -68,7 +70,6 @@ public class SecurityConfig {
 //                .ignoringRequestMatchers("/login")
 //        );
 
-        http.csrf((csrf) -> csrf.disable());
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
@@ -124,7 +125,7 @@ public class SecurityConfig {
         http.exceptionHandling(exception -> exception
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
         );
-
+        http.csrf(withDefaults());     // ✅ CSRF 활성화 (기본값이 enable)
         return http.build();
 
 //        함수 빠르게 만드려면 ()->{}
