@@ -9,4 +9,8 @@ public interface MonthlyGoalContentRepository extends JpaRepository<MonthlyGoalC
 
     List<MonthlyGoalContent> findByUsername(String username);
     Optional<MonthlyGoalContent> findByUsernameAndDateYmd(String username, String dateymd);
+    // username + monthlyGoal.dateYm 로 찾기
+    List<MonthlyGoalContent> findByUsernameAndMonthlyGoal_DateYmOrderByDateYmd(
+            String username, String dateYm
+    );
 }

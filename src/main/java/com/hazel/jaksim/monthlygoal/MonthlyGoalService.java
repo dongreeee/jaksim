@@ -1,6 +1,7 @@
 package com.hazel.jaksim.monthlygoal;
 
 import com.hazel.jaksim.monthlygoal.dto.MonthlyGoalResponse;
+import com.hazel.jaksim.monthlygoal.dto.MonthlyGoalViewDataDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -32,8 +33,21 @@ public class MonthlyGoalService {
 
     public ResponseEntity<?> getMonthlyByDate(String month, String username) {
         return monthlyGoalRepository.findByUsernameAndDateYm(username, month)
-                .map(goal -> ResponseEntity.ok(goal))
-                .orElse(ResponseEntity.noContent().build());  // 204 응답
+                .map(goal -> {
+                    // MonthlyGoalContent 리스트 조회 (JPA 메서드 사용)
+                    List<MonthlyGoalContent> contents = monthlyGoalContentRepository
+                            .findByUsernameAndMonthlyGoal_DateYmOrderByDateYmd(username, month);
+
+                    // DTO 생성
+                    MonthlyGoalViewDataDto dto = new MonthlyGoalViewDataDto(
+                            goal.getId(),
+                            goal.getTitle(),
+                            goal.getDateYm(),
+                            contents
+                    );
+                    return ResponseEntity.ok(dto);
+                })
+                .orElse(ResponseEntity.noContent().build());
     }
 
     public ResponseEntity<String> todoCheckAdd(String title,
