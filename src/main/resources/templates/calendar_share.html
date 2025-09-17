@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link href="/styles.css" rel="stylesheet"/>
 
     <title>모바일 입력 폼</title>
@@ -77,7 +79,7 @@
 
 <div th:replace="~{nav.html::navbar}"></div>
 <div class="container" style="margin-top:30px; padding:20px;">
-    <form id="calendarForm" action="/sharedCalenderAdd" method="post">
+    <form id="calendarForm" th:action="@{/sharedCalenderAdd}" method="post">
         <div class="label-row">
             <input type="hidden" name="messageId" id="messageId" th:value="${msgId}">
             <input type="hidden" name="id" id="calendar_id" th:value="${dto.calendarId}">

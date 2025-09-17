@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link href="/styles.css" rel="stylesheet"/>
     <title>모바일 입력 폼</title>
     <style>
@@ -64,7 +66,7 @@
     <div class="calendar-widget2" id="calendar3" style="width:100%;" >
         <!-- JavaScript로 채워짐 -->
     </div>
-    <form id="monthlyForm" action="/monthlyGoal/addContent" method="post" th:unless="${today}">
+    <form id="monthlyForm" th:action="@{/monthlyGoal/addContent}" method="post" th:unless="${today}">
 
 
         <input type="hidden" class="goal-date" name="date" id="date" th:value="${date}">
@@ -395,11 +397,15 @@ if ((year === currentYear) && (month === currentMonth) && !(data && data.title))
 
     const title = document.getElementById('goal_title').value;
     const month = document.getElementById('goal_month').value;
+    // CSRF 토큰 가져오기
+    const token = document.querySelector('meta[name="_csrf"]').content;
+    const header = document.querySelector('meta[name="_csrf_header"]').content;
 
     fetch('/monthlyGoal/add', {
         method: 'POST',
         headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+            [header]: token   // CSRF 헤더 추가
         },
         body: JSON.stringify({ title : title, dateym: month})
         })

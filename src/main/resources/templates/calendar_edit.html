@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link href="/styles.css" rel="stylesheet"/>
 
     <title>모바일 입력 폼</title>
@@ -80,7 +82,7 @@
 
 <div th:replace="~{nav.html::navbar}"></div>
 <div class="container" style="margin-top:30px; padding:20px;">
-    <form id="calendarForm" action="/editCalender" method="post">
+    <form id="calendarForm" th:action="@{/editCalender}" method="post">
         <div style="display: flex;">
             <div style="width:100%">
                 <div class="label-row">
@@ -248,6 +250,12 @@
 
     }
 
+
+      // CSRF 토큰 가져오기
+    const token = document.querySelector('meta[name="_csrf"]').content;
+    const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+
     function share() {
       const id = document.getElementById('share_id').value;
       const calendar_id = document.getElementById('calendar_id').value;
@@ -255,7 +263,8 @@
       fetch('/share', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    [header]: token   // CSRF 헤더 추가
                 },
                 body: JSON.stringify({ username : id, calendarId: calendar_id})
                 })
@@ -274,6 +283,24 @@
     alert("공유 실패: " + err.message); // "존재하지 않는 아이디입니다." 등
   });
 }
+
+
+        function deleteItem(e, button) {
+    e.preventDefault(); // a태그 기본 이동 방지
+    const id = button.getAttribute('data-id');
+
+      fetch('/deleteCalendar', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token   // CSRF 헤더 추가
+                },
+                body: JSON.stringify({ id: id })
+            }).then(r => r.text())
+            .then(()=> {
+            window.location.href = '/calendar';
+            });
+    }
 </script>
 
 <script>
@@ -303,26 +330,6 @@
     });
 </script>
 
-<script>
-
-    function deleteItem(e, button) {
-    e.preventDefault(); // a태그 기본 이동 방지
-    const id = button.getAttribute('data-id');
-      fetch('/deleteCalendar', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: id })
-            }).then(r => r.text())
-            .then(()=> {
-            window.location.href = '/calendar';
-            });
-    }
-
-
-
-</script>
 
 
 </body>

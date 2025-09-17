@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>모바일 중심 웹</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
@@ -13,7 +15,7 @@
     <div class="sub_login">
         <div class="tit">MyPage</div>
         <div class="txt">내 정 보</div>
-        <form class="login_form" action="/matchpw" method="POST">
+        <form class="login_form"  th:action="@{/matchpw}" method="POST">
             <div class="form_wrap">
                 <div class="input_box">
                     <div class="login_input">
@@ -25,10 +27,14 @@
                 <button type="submit" class="btn_login">정보 수정</button>
             </div>
 
-            <div class="logout_btns">
-                <a href="/logout" class="delete-btn">로 그 아 웃</a>
-            </div>
+
         </form>
+
+        <div class="logout_btns">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="delete-btn" >로 그 아 웃</button>
+            </form>
+        </div>
     </div>
 
 </div>

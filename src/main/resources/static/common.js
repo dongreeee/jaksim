@@ -25,6 +25,11 @@
 // div 동적으로 생성 시 순서에 맞게 생성되고 있는가에대한 체크 항시 필요 !!!!!! 짱 중요함
 
 
+    // CSRF 토큰 가져오기
+    const token = document.querySelector('meta[name="_csrf"]').content;
+    const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+
 document.addEventListener('DOMContentLoaded', function () {
     const params = new URLSearchParams(window.location.search);
     const shouldActivateMenu = params.get('menu') === 'active';
@@ -185,7 +190,9 @@ function onNotificationClick(messageId, calendarId) {
   // 1. 알림 상태 변경 요청 (vc=1)
   fetch('/messages/read-chk', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json',
+                [header]: token   // CSRF 헤더 추가
+              },
     body: JSON.stringify({ messageId })
   }).then(() => {
     // 2. 해당 calendar 상세 페이지로 이동
@@ -266,9 +273,6 @@ function onNotificationClick(messageId, calendarId) {
 
         for (let i = 1; i <= lastDay.getDate(); i++) {
           const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-
-
-  console.log('📅 검사 중인 날짜:', fullDate, '✅ emoji:', emojiMap[fullDate]); // 👈 여기 찍어!
 
 
           const d = document.createElement('div');
@@ -431,7 +435,8 @@ function onNotificationClick(messageId, calendarId) {
           fetch('/todo/delete', {
                     method: 'DELETE',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        [header]: token   // CSRF 헤더 추가
                     },
                     body: JSON.stringify({ id: id })
                     })
@@ -467,7 +472,8 @@ function onNotificationClick(messageId, calendarId) {
             fetch('/todo/check', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                     [header]: token   // CSRF 헤더 추가
                 },
                 body: JSON.stringify({
                     id: id,

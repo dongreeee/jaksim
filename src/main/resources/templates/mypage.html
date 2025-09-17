@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>모바일 중심 웹</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
@@ -16,7 +18,7 @@
     </div>
     <div class="login_wrap">
         <div class="form_wrap">
-            <form action="/userUpdate" method="post">
+            <form th:action="@{/userUpdate}" method="post">
                 <input type="hidden" name="socialLogin" th:value="${#authentication.principal.socialLogin}">
                 <div class="input_box">
                     <div class="tit">이메일</div>

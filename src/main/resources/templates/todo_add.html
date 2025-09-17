@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link href="/styles.css" rel="stylesheet"/>
     <title>모바일 입력 폼</title>
     <style>
@@ -63,7 +65,7 @@
 <body>
 <div th:replace="~{nav.html::navbar}"></div>
 <div class="container" style="margin-top:30px; padding:20px;">
-    <form id="todoForm" action="/todo/add" method="post">
+    <form id="todoForm" th:action="@{/todo/add}" method="post">
         <div class="label-row">
             <label for="content">내용</label>
         </div>
