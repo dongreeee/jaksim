@@ -788,20 +788,34 @@ element.style {
 }
 .login_wrap .input_box .checked li.off {
     color: #bbb;
-    background: url(../images/ico_checked_off.png) no-repeat 0 0;
-    background-size: 16px 12px;
+}
+
+.login_wrap .input_box .checked li.off::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-size: contain;
+    margin-left: 5px; /* 글자와 이미지 사이 간격 */
 }
 
 .login_wrap .input_box .checked li {
     font-size: 14px;
     font-weight: 500;
-    padding-left: 18px;
+     position: relative; /* ::after 위치 기준 */
 }
 
 .login_wrap .input_box .checked li.on {
-    color: #546de5;
-    background: url(/web/images/ico_checked_on.png) no-repeat 0 0;
-    background-size: 16px 12px;
+    color: #bbb;
+}
+
+.login_wrap .input_box .checked li.on::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(images/checkmark.png) no-repeat center center;
+    background-size: contain;
 }
 
 .login_btns button.btn_sm {

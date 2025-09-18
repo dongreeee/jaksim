@@ -64,6 +64,8 @@
 <!--                                비밀번호 재확인 -->
                                 <div class="input">
                                     <input type="password" id="confirm-password" name="confirm-password" placeholder="비밀번호를 확인해 주세요.">
+                                    <p id="confirm-message-match" style="color: green; font-size: 0.9em; display: none;">비밀번호가 일치합니다.</p>
+                                    <p id="confirm-message-mismatch" style="color: red; font-size: 0.9em; display: none;">비밀번호가 일치하지 않습니다.</p>
                                 </div>
                             </div>
 
@@ -153,6 +155,73 @@
     }
     // else: 인증되었으면 그냥 정상 제출됨
   });
+</script>
+
+<script>
+
+const passwordInput = document.getElementById('password');
+const checks = document.querySelectorAll('.checked li');
+
+const confirmInput = document.getElementById('confirm-password');
+const confirmMatch = document.getElementById('confirm-message-match');
+const confirmMismatch = document.getElementById('confirm-message-mismatch');
+
+passwordInput.addEventListener('input', () => {
+    const value = passwordInput.value;
+
+    // 영문 체크
+    if (/[a-zA-Z]/.test(value)) {
+        checks[0].classList.replace('off', 'on');
+    } else {
+        checks[0].classList.replace('on', 'off');
+    }
+
+    // 숫자 체크
+    if (/\d/.test(value)) {
+        checks[1].classList.replace('off', 'on');
+    } else {
+        checks[1].classList.replace('on', 'off');
+    }
+
+    // 특수문자 체크
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+        checks[2].classList.replace('off', 'on');
+    } else {
+        checks[2].classList.replace('on', 'off');
+    }
+
+    // 길이 체크 (8~20자)
+    if (value.length >= 8 && value.length <= 20) {
+        checks[3].classList.replace('off', 'on');
+    } else {
+        checks[3].classList.replace('on', 'off');
+    }
+});
+
+
+
+function validateConfirm() {
+    const password = passwordInput.value;
+    const confirm = confirmInput.value;
+
+    if (confirm.length === 0) {
+        confirmMatch.style.display = 'none';
+        confirmMismatch.style.display = 'none';
+        return;
+    }
+
+    if (password === confirm) {
+        confirmMatch.style.display = 'block';
+        confirmMismatch.style.display = 'none';
+    } else {
+        confirmMatch.style.display = 'none';
+        confirmMismatch.style.display = 'block';
+    }
+}
+
+// 이벤트
+passwordInput.addEventListener('input', validateConfirm);
+confirmInput.addEventListener('input', validateConfirm);
 </script>
 
 
