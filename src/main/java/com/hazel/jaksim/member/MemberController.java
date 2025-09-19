@@ -47,7 +47,7 @@ public class MemberController {
                                String password,
                                String rePassword,
                                String displayName,
-                               Model model){
+                               Model model) throws Exception {
         try{
             boolean isSocialLogin = Boolean.parseBoolean(socialLogin);
             memberService.updateMember(customerUser, isSocialLogin, username, password, rePassword, displayName);
@@ -60,7 +60,7 @@ public class MemberController {
                 default -> "회원가입 중 오류가 발생했습니다.";
             };
             model.addAttribute("errorMsg", msg);
-            return "join";
+            return "mypage.html";
         }
     }
 

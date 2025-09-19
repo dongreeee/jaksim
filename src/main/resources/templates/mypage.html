@@ -18,7 +18,7 @@
     </div>
     <div class="login_wrap">
         <div class="form_wrap">
-            <form th:action="@{/userUpdate}" method="post">
+            <form th:action="@{/userUpdate}" method="post" id="updateForm">
                 <input type="hidden" name="socialLogin" th:value="${#authentication.principal.socialLogin}">
                 <div class="input_box">
                     <div class="tit">이메일</div>
@@ -35,7 +35,7 @@
                 <div class="input_box" th:if="${!#authentication.principal.socialLogin}">
                     <div class="tit">비밀번호</div>
                     <div class="input">
-                        <input type="password" name="password" placeholder="비밀번호를 입력해 주세요.">
+                        <input type="password" id="password" name="password" placeholder="비밀번호를 입력해 주세요.">
                     </div>
                     <ul class="checked">
                         <li class="off" style="font-size: inherit;">영문</li>
@@ -44,7 +44,9 @@
                         <li class="off" style="font-size: inherit;">8자 이상 20자 이하</li>
                     </ul>
                     <div class="input">
-                        <input type="password" name="rePassword" placeholder="비밀번호를 확인해 주세요.">
+                        <input type="password" id="confirm-password" name="rePassword" placeholder="비밀번호를 확인해 주세요.">
+                        <p id="confirm-message-match" style="color: green; font-size: 0.9em; display: none;">비밀번호가 일치합니다.</p>
+                        <p id="confirm-message-mismatch" style="color: red; font-size: 0.9em; display: none;">비밀번호가 일치하지 않습니다.</p>
                     </div>
                 </div>
 <!--                <div class="input_box">-->
@@ -79,6 +81,113 @@
 
 <!-- 공통 WebSocket 연결 스크립트 -->
 <script src="/common.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("updateForm");
+        const passwordInput = document.getElementById("password");
+        const confirmInput = document.getElementById("confirm-password");
+        const confirmMatch = document.getElementById("confirm-message-match");
+        const confirmMismatch = document.getElementById("confirm-message-mismatch");
+        const checks = document.querySelectorAll('.checked li');
+
+        // 소셜 로그인일 경우 -> 비밀번호 input 자체가 없음
+        const isSocialLogin = !passwordInput;
+
+        // ✅ 비밀번호 조건 체크 함수
+        function checkPasswordRules(value) {
+            let valid = true;
+
+            // 영문
+            if (/[a-zA-Z]/.test(value)) {
+                checks[0].classList.replace('off', 'on');
+            } else {
+                checks[0].classList.replace('on', 'off');
+                valid = false;
+            }
+
+            // 숫자
+            if (/\d/.test(value)) {
+                checks[1].classList.replace('off', 'on');
+            } else {
+                checks[1].classList.replace('on', 'off');
+                valid = false;
+            }
+
+            // 특수문자
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
+                checks[2].classList.replace('off', 'on');
+            } else {
+                checks[2].classList.replace('on', 'off');
+                valid = false;
+            }
+
+            // 길이 (8~20)
+            if (value.length >= 8 && value.length <= 20) {
+                checks[3].classList.replace('off', 'on');
+            } else {
+                checks[3].classList.replace('on', 'off');
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        // ✅ 비밀번호 확인 검증
+        function validateConfirm() {
+            if (!passwordInput || !confirmInput) return true; // 소셜 로그인일 경우 통과
+            const password = passwordInput.value;
+            const confirm = confirmInput.value;
+
+            if (confirm.length === 0) {
+                confirmMatch.style.display = 'none';
+                confirmMismatch.style.display = 'none';
+                return false;
+            }
+
+            if (password === confirm) {
+                confirmMatch.style.display = 'block';
+                confirmMismatch.style.display = 'none';
+                return true;
+            } else {
+                confirmMatch.style.display = 'none';
+                confirmMismatch.style.display = 'block';
+                return false;
+            }
+        }
+
+        // 이벤트 리스너 (소셜로그인 아닐 때만)
+        if (!isSocialLogin) {
+            passwordInput.addEventListener("input", () => {
+                checkPasswordRules(passwordInput.value);
+                validateConfirm();
+            });
+
+            confirmInput.addEventListener("input", validateConfirm);
+        }
+
+        // ✅ 최종 제출 시 검증
+        form.addEventListener("submit", (e) => {
+            if (isSocialLogin) return; // 소셜로그인은 검증 안 함
+
+             // 비밀번호 입력칸이 없거나, 비어있으면 → 검증 안 하고 그대로 제출
+    if (!passwordInput || passwordInput.value.trim() === "") {
+        return;
+    }
+
+
+            const passwordValid = checkPasswordRules(passwordInput.value);
+            const confirmValid = validateConfirm();
+
+            if (!passwordValid) {
+                e.preventDefault();
+                alert("비밀번호 조건을 만족하지 않습니다.");
+            } else if (!confirmValid) {
+                e.preventDefault();
+                alert("비밀번호가 일치하지 않습니다.");
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
